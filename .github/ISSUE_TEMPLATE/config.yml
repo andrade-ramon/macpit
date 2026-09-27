@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Relatar falha de segurança (privado)
+    url: https://github.com/andrade-ramon/macpit/security/advisories/new
+    about: Não abra issue pública para vulnerabilidades.

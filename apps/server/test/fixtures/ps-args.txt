@@ -1,0 +1,9 @@
+    1 /sbin/launchd
+  339 /usr/libexec/logd
+  453 /System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow console
+ 1200 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --flag=a b
+ 1201 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer) --type=renderer
+ 2000 -zsh
+ 2001 node server.js --port 3000
+ 2002 (git)
+ 3000 /usr/sbin/distnoted agent

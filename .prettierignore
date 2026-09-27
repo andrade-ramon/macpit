@@ -1,0 +1,8 @@
+dist
+node_modules
+pnpm-lock.yaml
+coverage
+
+# exportação do Claude Design (referência visual; não formatar)
+docs/design/
+docs/design.zip

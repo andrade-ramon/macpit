@@ -1,0 +1,35 @@
+{
+  "name": "@macpit/web",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && tsc --noEmit -p tsconfig.sw.json && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.sw.json",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@macpit/shared": "workspace:*",
+    "@fontsource/instrument-sans": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@tanstack/react-query": "^5.103.3",
+    "@tanstack/react-virtual": "^3.14.13",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router": "^8.4.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.1"
+  }
+}

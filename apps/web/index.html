@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="theme-color" content="#12141a" />
+    <meta
+      name="description"
+      content="Monitore processos, portas e disco do seu Mac e rode comandos salvos com um clique."
+    />
+    <meta name="apple-mobile-web-app-title" content="macpit" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>macpit</title>
+    <script>
+      // Aplica a paleta e a densidade antes da primeira pintura (evita "piscar"). Ver src/lib/theme.ts.
+      (function () {
+        var d = document.documentElement;
+        try {
+          d.dataset.palette = localStorage.getItem('macpit-palette') || localStorage.getItem('bm-palette') || 'carbono';
+          d.dataset.density =
+            localStorage.getItem('macpit-density') || localStorage.getItem('bm-density') || 'comfortable';
+        } catch (e) {
+          d.dataset.palette = 'carbono';
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

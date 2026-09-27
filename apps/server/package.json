@@ -1,0 +1,30 @@
+{
+  "name": "@macpit/server",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "NODE_ENV=development MACPIT_WEB_DEV_URL=http://localhost:5173 tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@macpit/shared": "workspace:*",
+    "@fastify/cookie": "^11.1.2",
+    "@fastify/static": "^10.1.4",
+    "@fastify/websocket": "^11.3.1",
+    "fastify": "^5.12.5",
+    "node-pty": "^1.1.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.23.15",
+    "ws": "^8.21.3"
+  }
+}

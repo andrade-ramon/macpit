@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="./mock-data.js"></script>
+<style>
+html,body{margin:0;height:100%;background:#020617;color:#f1f5f9;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#38bdf8;text-decoration:none}a:hover{text-decoration:underline}
+button{font:inherit;cursor:pointer}input,select{font:inherit}
+@keyframes pulse{50%{opacity:.5}}
+</style>
+</helmet>
+<div style="display:flex;height:100vh;min-height:0;flex-direction:column;font-size:14px;line-height:1.5">
+  <div style="display:flex;min-height:0;flex:1">
+    <aside style="display:flex;width:224px;flex-shrink:0;flex-direction:column;border-right:1px solid #1e293b;background:rgba(15,23,42,.4)">
+      <div style="padding:20px 16px"><span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:18px;font-weight:700;color:#34d399">macpit</span></div>
+      <nav style="flex:1;padding:0 8px;display:flex;flex-direction:column;gap:4px">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="7">
+          <button onClick="{{ n.go }}" style="display:flex;align-items:center;gap:12px;border-radius:8px;padding:8px 12px;font-size:14px;border:0;text-align:left;background:{{ n.bg }};color:{{ n.color }}" style-hover="background:rgba(30,41,59,.6);color:#e2e8f0"><span style="width:16px;text-align:center">{{ n.icon }}</span>{{ n.label }}</button>
+        </sc-for>
+      </nav>
+      <div style="padding:0 16px 8px"><button style="width:100%;justify-content:center;display:inline-flex;align-items:center;gap:6px;border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">⤓ Instalar app</button></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:0 16px 8px;font-size:12px;color:#64748b">
+        <kbd style="border-radius:4px;border:1px solid #334155;background:#1e293b;padding:2px 6px;font-family:inherit">⌘K</kbd> comandos
+        <button onClick="{{ openHelp }}" style="margin-left:auto;background:none;border:0;color:#64748b">?</button>
+        <button style="background:none;border:0;color:#64748b">◐</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;border-top:1px solid #1e293b;padding:12px 16px;font-size:12px;color:#64748b">
+        <div style="display:flex;align-items:center;gap:8px"><span style="height:8px;width:8px;border-radius:99px;background:#34d399"></span>conectado</div>
+        <div>lucas@macbook-pro-lucas · v1.7.0</div>
+      </div>
+    </aside>
+    <main style="min-width:0;flex:1;overflow:auto;padding:24px;position:relative">
+
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+        <div data-screen-label="Visão geral" style="display:flex;flex-direction:column;gap:24px">
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px">
+            <h1 style="margin:0;font-size:24px;font-weight:600;line-height:32px">Visão geral</h1>
+            <p style="margin:0;font-size:14px;color:#64748b">macbook-pro-lucas · Apple M3 Max · 16 núcleos · ligado há 10d</p>
+          </div>
+          <div style="display:grid;gap:16px;grid-template-columns:repeat(3,minmax(0,1fr))">
+            <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+              <h2 style="margin:0 0 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">CPU</h2>
+              <div style="margin-bottom:12px"><p style="margin:0;font-size:30px;font-weight:600;line-height:36px;font-variant-numeric:tabular-nums">23,4%</p><p style="margin:0;font-size:14px;color:#64748b">usuário 15,1% · sistema 8,3%</p></div>
+              <div style="height:40px;color:#34d399">{{ sparkCpu }}</div>
+            </section>
+            <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+              <h2 style="margin:0 0 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Memória</h2>
+              <div style="margin-bottom:12px"><p style="margin:0;font-size:30px;font-weight:600;line-height:36px;font-variant-numeric:tabular-nums">66,9%</p><p style="margin:0;font-size:14px;color:#64748b">21,4 GB de 32 GB</p></div>
+              <div style="height:40px;color:#38bdf8">{{ sparkMem }}</div>
+            </section>
+            <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+              <h2 style="margin:0 0 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Carga (load average)</h2>
+              <div style="margin-bottom:12px"><p style="margin:0;font-size:30px;font-weight:600;line-height:36px;font-variant-numeric:tabular-nums">4,12</p><p style="margin:0;font-size:14px;color:#64748b">5 min 3,86 · 15 min 3,41 · dentro da capacidade</p></div>
+              <div style="height:40px;color:#fbbf24">{{ sparkLoad }}</div>
+            </section>
+          </div>
+          <div style="display:grid;gap:16px;grid-template-columns:repeat(4,minmax(0,1fr))">
+            <section style="grid-column:span 2;border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+              <h2 style="margin:0 0 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Composição da memória</h2>
+              <div style="display:flex;height:10px;overflow:hidden;border-radius:99px;background:#1e293b"><div style="width:37.8%;background:#0ea5e9"></div><div style="width:13.1%;background:#8b5cf6"></div><div style="width:8.7%;background:#f59e0b"></div><div style="width:13.4%;background:#64748b"></div></div>
+              <ul style="display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:#94a3b8;margin:8px 0 0;padding:0;list-style:none">
+                <li style="display:flex;align-items:center;gap:6px"><span style="height:8px;width:8px;border-radius:2px;background:#0ea5e9"></span>Apps <span style="color:#cbd5e1">12,1 GB</span></li>
+                <li style="display:flex;align-items:center;gap:6px"><span style="height:8px;width:8px;border-radius:2px;background:#8b5cf6"></span>Wired <span style="color:#cbd5e1">4,2 GB</span></li>
+                <li style="display:flex;align-items:center;gap:6px"><span style="height:8px;width:8px;border-radius:2px;background:#f59e0b"></span>Comprimida <span style="color:#cbd5e1">2,8 GB</span></li>
+                <li style="display:flex;align-items:center;gap:6px"><span style="height:8px;width:8px;border-radius:2px;background:#64748b"></span>Cache <span style="color:#cbd5e1">4,3 GB</span></li>
+              </ul>
+            </section>
+            <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+              <h2 style="margin:0 0 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Swap</h2>
+              <p style="margin:0;font-size:30px;font-weight:600;line-height:36px">1,2 GB</p><p style="margin:0;font-size:14px;color:#64748b">de 3 GB alocados</p>
+            </section>
+            <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+              <h2 style="margin:0 0 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Disco</h2>
+              <p style="margin:0;font-size:30px;font-weight:600;line-height:36px;color:#fcd34d">81,7%</p><p style="margin:0 0 12px;font-size:14px;color:#64748b">182 GB livres</p>
+              <div style="height:8px;overflow:hidden;border-radius:99px;background:#1e293b"><div style="height:100%;width:81.7%;background:#f59e0b"></div></div>
+            </section>
+          </div>
+          <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+            <h2 style="margin:0 0 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Serviços</h2>
+            <ul style="display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none">
+              <sc-for list="{{ services }}" as="s" hint-placeholder-count="3">
+                <li><button onClick="{{ goActions }}" style="display:flex;align-items:center;gap:8px;border-radius:8px;border:1px solid #1e293b;background:none;padding:6px 12px;font-size:14px;color:#f1f5f9"><span>{{ s.icon }}</span><span>{{ s.name }}</span><span style="border-radius:4px;padding:2px 6px;font-size:12px;background:{{ s.badgeBg }};color:{{ s.badgeColor }}">{{ s.badge }}</span></button></li>
+              </sc-for>
+            </ul>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isProcesses }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Processos" style="margin:-24px;display:flex;height:calc(100% + 48px);min-height:0">
+          <div style="display:flex;min-width:0;flex:1;flex-direction:column;gap:16px;padding:24px">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+              <h1 style="margin:0;font-size:24px;font-weight:600;line-height:32px">Processos</h1>
+              <span style="font-size:14px;color:#64748b">{{ procCount }} · CPU somada {{ totalCpu }}%</span>
+              <div style="margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                <input type="search" value="{{ query }}" onChange="{{ setQuery }}" placeholder="Buscar nome, comando ou PID…" style="width:288px;border-radius:8px;border:1px solid #334155;background:#0f172a;padding:6px 12px;font-size:14px;color:#f1f5f9;outline:none" />
+                <select style="border-radius:8px;border:1px solid #334155;background:#0f172a;padding:6px 12px;font-size:14px;color:#f1f5f9"><option>Todos os usuários</option><option>Meus (lucas)</option><option>root</option></select>
+                <button onClick="{{ toggleTree }}" style="display:inline-flex;align-items:center;border-radius:8px;border:1px solid {{ treeBorder }};background:{{ treeBg }};padding:6px 12px;font-size:14px;color:{{ treeColor }}">Árvore</button>
+              </div>
+            </div>
+            <div style="display:flex;min-height:0;flex:1;flex-direction:column;overflow:hidden;border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.4)">
+              <div style="min-height:0;flex:1;overflow:auto">
+                <div style="min-width:1000px">
+                  <div style="display:grid;grid-template-columns:72px minmax(160px,1.2fr) 100px 72px 90px 96px 84px minmax(200px,2fr);gap:12px;align-items:center;position:sticky;top:0;z-index:1;border-bottom:1px solid #1e293b;background:#0f172a;padding:8px 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">
+                    <div style="text-align:right">PID</div><div>Nome</div><div>Usuário</div><div style="text-align:right;color:#34d399">CPU ↓</div><div style="text-align:right">Memória</div><div>Estado</div><div style="text-align:right">Tempo</div><div>Comando</div>
+                  </div>
+                  <sc-for list="{{ procRows }}" as="p" hint-placeholder-count="12">
+                    <div onClick="{{ p.select }}" style="display:grid;grid-template-columns:72px minmax(160px,1.2fr) 100px 72px 90px 96px 84px minmax(200px,2fr);gap:12px;align-items:center;height:32px;cursor:pointer;border-bottom:1px solid rgba(30,41,59,.5);padding:0 12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:{{ p.bg }};opacity:{{ p.opacity }}" style-hover="background:rgba(30,41,59,.5)">
+                      <div style="text-align:right;color:#94a3b8;font-variant-numeric:tabular-nums">{{ p.pid }}</div>
+                      <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-sans-serif,system-ui,sans-serif;font-size:14px;color:#f1f5f9;padding-left:{{ p.indent }}">{{ p.prefix }}{{ p.name }}<sc-if value="{{ p.self }}" hint-placeholder-val="{{ false }}"><span style="margin-left:8px;border-radius:4px;background:#065f46;padding:0 4px;font-size:10px">macpit</span></sc-if></div>
+                      <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ p.userColor }}">{{ p.user }}</div>
+                      <div style="text-align:right;font-variant-numeric:tabular-nums;color:{{ p.cpuColor }}">{{ p.cpu }}</div>
+                      <div style="text-align:right;font-variant-numeric:tabular-nums;color:#cbd5e1">{{ p.mem }}</div>
+                      <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ p.stateColor }}">{{ p.state }}</div>
+                      <div style="text-align:right;font-variant-numeric:tabular-nums;color:#64748b">{{ p.time }}</div>
+                      <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#64748b">{{ p.command }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+          <sc-if value="{{ hasSelected }}" hint-placeholder-val="{{ true }}">
+            <aside style="display:flex;width:520px;flex-shrink:0;flex-direction:column;gap:16px;overflow:hidden;border-left:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+              <div style="display:flex;align-items:flex-start;gap:8px">
+                <div style="min-width:0;flex:1"><h2 style="margin:0;font-size:18px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ sel.name }}</h2><p style="margin:0;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#64748b">PID {{ sel.pid }}</p></div>
+                <button onClick="{{ deselect }}" style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">✕</button>
+              </div>
+              <div style="min-height:0;flex:1;overflow:auto;display:flex;flex-direction:column;gap:20px">
+                <dl style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0">
+                  <div><dt style="font-size:12px;color:#64748b">Usuário</dt><dd style="margin:0;font-size:14px;color:#e2e8f0">{{ sel.user }}</dd></div>
+                  <div><dt style="font-size:12px;color:#64748b">CPU</dt><dd style="margin:0;font-size:14px;color:#e2e8f0">{{ sel.cpu }}%</dd></div>
+                  <div><dt style="font-size:12px;color:#64748b">Memória</dt><dd style="margin:0;font-size:14px;color:#e2e8f0">{{ sel.mem }} ({{ sel.memPct }}%)</dd></div>
+                  <div><dt style="font-size:12px;color:#64748b">Estado</dt><dd style="margin:0;font-size:14px;color:#e2e8f0">{{ sel.state }} <span style="color:#64748b">({{ sel.stateRaw }})</span></dd></div>
+                  <div><dt style="font-size:12px;color:#64748b">Rodando há</dt><dd style="margin:0;font-size:14px;color:#e2e8f0">{{ sel.time }}</dd></div>
+                  <div><dt style="font-size:12px;color:#64748b">Início</dt><dd style="margin:0;font-size:14px;color:#e2e8f0">{{ sel.started }}</dd></div>
+                </dl>
+                <div><p style="margin:0 0 4px;font-size:12px;color:#64748b">Comando</p><pre style="margin:0;max-height:128px;overflow:auto;white-space:pre-wrap;word-break:break-all;border-radius:8px;background:rgba(0,0,0,.4);padding:8px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#cbd5e1">{{ sel.command }}</pre></div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  <button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">Encerrar</button>
+                  <button style="border-radius:8px;border:1px solid #e11d48;background:#e11d48;padding:6px 12px;font-size:14px;color:#fff">Forçar</button>
+                  <button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">Interromper</button>
+                  <button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">HUP</button>
+                </div>
+                <section>
+                  <h3 style="margin:0 0 4px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Pai</h3>
+                  <div style="display:flex;gap:8px;padding:4px 8px;font-size:14px"><span style="width:56px;text-align:right;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#64748b">{{ sel.ppid }}</span><span>{{ sel.parentName }}</span></div>
+                  <h3 style="margin:8px 0 4px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Logs e saídas <span style="color:#475569">(2)</span></h3>
+                  <div style="display:flex;align-items:center;gap:8px;padding:4px 8px;font-size:12px"><span style="width:40px;font-family:ui-monospace,Menlo,monospace;color:#64748b">3w</span><span style="width:48px;color:#475569">REG</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,Menlo,monospace;color:#cbd5e1">/Users/lucas/Library/Logs/{{ sel.name }}.log</span><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">Acompanhar</button></div>
+                  <div style="display:flex;align-items:center;gap:8px;padding:4px 8px;font-size:12px"><span style="width:40px;font-family:ui-monospace,Menlo,monospace;color:#64748b">5w</span><span style="width:48px;color:#475569">REG</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,Menlo,monospace;color:#cbd5e1">/private/var/log/system.log</span><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">Acompanhar</button></div>
+                </section>
+              </div>
+            </aside>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isPorts }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Portas" style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+            <h1 style="margin:0;font-size:24px;font-weight:600;line-height:32px">Portas</h1>
+            <span style="font-size:14px;color:#64748b">11 em escuta</span>
+            <div style="margin-left:auto;display:flex;flex-wrap:wrap;gap:8px">
+              <input type="search" placeholder="Porta, processo ou comando…" style="width:256px;border-radius:8px;border:1px solid #334155;background:#0f172a;padding:6px 12px;font-size:14px;color:#f1f5f9;outline:none" />
+              <select style="border-radius:8px;border:1px solid #334155;background:#0f172a;padding:6px 12px;font-size:14px;color:#f1f5f9"><option>TCP e UDP</option></select>
+              <select style="border-radius:8px;border:1px solid #334155;background:#0f172a;padding:6px 12px;font-size:14px;color:#f1f5f9"><option>Qualquer escopo</option></select>
+            </div>
+          </div>
+          <p style="margin:0;border-radius:8px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:8px 12px;font-size:14px;color:#94a3b8">Sem root, o <code>lsof</code> só enxerga portas de processos do usuário <strong>lucas</strong>. Inicie com <code>sudo ./scripts/start.sh</code> para ver todas.</p>
+          <div style="overflow-x:auto;border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.4)">
+            <table style="width:100%;min-width:900px;font-size:14px;border-collapse:collapse">
+              <thead><tr style="border-bottom:1px solid #1e293b;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">
+                <th style="padding:8px 12px;text-align:right;font-weight:600">Porta</th><th style="padding:8px 12px;font-weight:600">Proto</th><th style="padding:8px 12px;font-weight:600">Endereço</th><th style="padding:8px 12px;font-weight:600">Processo</th><th style="padding:8px 12px;text-align:right;font-weight:600">PID</th><th style="padding:8px 12px;font-weight:600">Usuário</th><th style="padding:8px 12px;text-align:right;font-weight:600">Ações</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ portRows }}" as="e" hint-placeholder-count="8">
+                  <tr style="border-bottom:1px solid rgba(30,41,59,.5)" style-hover="background:rgba(30,41,59,.4)">
+                    <td style="padding:8px 12px;text-align:right;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">{{ e.port }}</td>
+                    <td style="padding:8px 12px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#94a3b8">{{ e.protocol }}</td>
+                    <td style="padding:8px 12px"><div style="display:flex;align-items:center;gap:8px"><span style="border-radius:4px;padding:2px 6px;font-size:11px;background:{{ e.scopeBg }};color:{{ e.scopeColor }}">{{ e.scopeLabel }}</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#94a3b8">{{ e.bindings }}</span></div></td>
+                    <td style="max-width:320px;padding:8px 12px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f1f5f9">{{ e.command }}</div><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#64748b">{{ e.commandLine }}</div></td>
+                    <td style="padding:8px 12px;text-align:right;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#94a3b8">{{ e.pid }}</td>
+                    <td style="padding:8px 12px;font-size:12px;color:{{ e.userColor }}">{{ e.user }}</td>
+                    <td style="padding:8px 12px"><div style="display:flex;justify-content:flex-end;gap:6px">
+                      <sc-if value="{{ e.hasUrl }}" hint-placeholder-val="{{ true }}"><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">Abrir</button></sc-if>
+                      <button onClick="{{ e.goProcess }}" style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">Processo</button>
+                      <button style="border-radius:8px;border:1px solid #e11d48;background:#e11d48;padding:4px 8px;font-size:12px;color:#fff">Encerrar</button>
+                    </div></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isDisk }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Disco" style="display:flex;flex-direction:column;gap:24px">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+            <h1 style="margin:0;font-size:24px;font-weight:600;line-height:32px">Disco</h1>
+            <form style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:14px;color:#94a3b8"><label>Alertar a partir de</label><input type="number" value="90" style="width:80px;border-radius:8px;border:1px solid #334155;background:#0f172a;padding:6px 12px;font-size:14px;color:#f1f5f9" /><span>%</span></form>
+          </div>
+          <div role="alert" style="border-radius:8px;border:1px solid #9f1239;background:rgba(76,5,25,.6);padding:8px 16px;font-size:14px;color:#fecdd3">Time Machine está com 92,0% de uso (160 GB livres)</div>
+          <div style="display:grid;gap:16px;grid-template-columns:repeat(3,minmax(0,1fr))">
+            <sc-for list="{{ volRows }}" as="v" hint-placeholder-count="3">
+              <button onClick="{{ v.select }}" style="border-radius:12px;border:1px solid {{ v.border }};background:{{ v.bg }};padding:16px;text-align:left;color:#f1f5f9">
+                <div style="display:flex;align-items:baseline;gap:8px"><span style="font-weight:500">{{ v.name }}</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ v.mount }}</span><span style="margin-left:auto;font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;color:{{ v.pctColor }}">{{ v.pct }}%</span></div>
+                <div style="margin-top:12px;height:10px;overflow:hidden;border-radius:99px;background:#1e293b"><div style="height:100%;width:{{ v.pct }}%;background:{{ v.barColor }}"></div></div>
+                <p style="margin:8px 0 0;font-size:14px;color:#94a3b8">{{ v.used }} usados · <span style="color:#e2e8f0">{{ v.avail }} livres</span> de {{ v.total }}</p>
+              </button>
+            </sc-for>
+          </div>
+          <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Histórico — {{ volName }}</h2>
+              <div style="margin-left:auto;display:flex;gap:4px"><button style="border-radius:8px;border:1px solid #059669;background:#059669;padding:4px 8px;font-size:12px;color:#fff">24h</button><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">7d</button><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">30d</button></div></div>
+            <div style="height:224px">{{ diskChart }}</div>
+          </section>
+          <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px;display:flex;flex-direction:column;gap:12px">
+            <h2 style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Maiores pastas</h2>
+            <form style="display:flex;flex-wrap:wrap;gap:8px">
+              <input value="/Users/lucas" style="min-width:256px;flex:1;border-radius:8px;border:1px solid #334155;background:#0f172a;padding:6px 12px;font-size:14px;color:#f1f5f9;font-family:ui-monospace,Menlo,monospace" />
+              <button style="border-radius:8px;border:1px solid #059669;background:#059669;padding:6px 12px;font-size:14px;color:#fff">Analisar</button>
+              <button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">Home (~)</button><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">Aplicativos</button><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">Biblioteca</button><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">Usuários</button>
+            </form>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:14px"><span style="color:#94a3b8">/</span><span style="color:#94a3b8">Users</span><span style="color:#475569">/</span><span style="font-weight:600">lucas</span><span style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:#64748b">412 GB · em cache (14:31:02) <button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">Recalcular</button></span></div>
+            <ul style="margin:0;padding:0;list-style:none;overflow:hidden;border-radius:12px;border:1px solid #1e293b">
+              <li><button style="width:100%;padding:8px 12px;text-align:left;font-size:14px;color:#94a3b8;background:none;border:0">↑ ..</button></li>
+              <sc-for list="{{ duRows }}" as="d" hint-placeholder-count="6">
+                <li style="border-top:1px solid rgba(30,41,59,.6)"><button style="position:relative;display:flex;width:100%;align-items:center;gap:12px;padding:8px 12px;text-align:left;font-size:14px;background:none;border:0;color:#f1f5f9" style-hover="background:rgba(30,41,59,.6)">
+                  <span style="position:absolute;top:0;bottom:0;left:0;background:rgba(14,165,233,.1);width:{{ d.barW }}"></span>
+                  <span style="position:relative;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📁 {{ d.name }}</span><span style="position:relative;width:56px;text-align:right;font-size:12px;color:#64748b">{{ d.pct }}</span><span style="position:relative;width:96px;text-align:right;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#e2e8f0">{{ d.size }}</span></button></li>
+              </sc-for>
+            </ul>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isActions }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Ações" style="margin:-24px;display:flex;height:calc(100% + 48px);min-height:0">
+          <div style="min-width:0;flex:1;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:24px">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+              <h1 style="margin:0;font-size:24px;font-weight:600;line-height:32px">Ações</h1><span style="font-size:14px;color:#64748b">comandos salvos, executados com um clique</span>
+              <div style="margin-left:auto;display:flex;flex-wrap:wrap;gap:8px">
+                <button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">Importar do shell</button><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">Importar JSON</button><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">Exportar JSON</button><button style="border-radius:8px;border:1px solid #059669;background:#059669;padding:6px 12px;font-size:14px;color:#fff">+ Nova ação</button>
+              </div>
+            </div>
+            <sc-for list="{{ actionGroups }}" as="g" hint-placeholder-count="3">
+              <section style="display:flex;flex-direction:column;gap:12px">
+                <h2 style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">{{ g.title }}</h2>
+                <div style="display:grid;gap:12px;grid-template-columns:repeat({{ actionCols }},minmax(0,1fr))">
+                  <sc-for list="{{ g.items }}" as="a" hint-placeholder-count="2">
+                    <div style="display:flex;min-width:0;flex-direction:column;gap:12px;border-radius:12px;border:1px solid {{ a.border }};background:rgba(15,23,42,.6);padding:16px">
+                      <div style="display:flex;align-items:flex-start;gap:12px">
+                        <span style="font-size:24px;line-height:1">{{ a.icon }}</span>
+                        <div style="min-width:0;flex:1">
+                          <div style="display:flex;align-items:center;gap:8px"><h3 style="margin:0;font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ a.name }}</h3><sc-if value="{{ a.favorite }}" hint-placeholder-val="{{ false }}"><span>★</span></sc-if><sc-if value="{{ a.persistent }}" hint-placeholder-val="{{ false }}"><span style="border-radius:4px;background:#1e293b;padding:0 6px;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">{{ a.serviceTag }}</span></sc-if></div>
+                          <p style="margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#64748b">{{ a.command }}</p>
+                          <p style="margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#475569">{{ a.meta }}</p>
+                        </div>
+                        <button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">Editar</button>
+                      </div>
+                      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                        <span style="border-radius:4px;padding:2px 8px;font-size:12px;background:{{ a.badgeBg }};color:{{ a.badgeColor }}">{{ a.badge }}</span>
+                        <div style="margin-left:auto;display:flex;gap:8px">
+                          <sc-if value="{{ a.running }}" hint-placeholder-val="{{ false }}"><button onClick="{{ a.openRun }}" style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">Terminal</button><button style="border-radius:8px;border:1px solid #e11d48;background:#e11d48;padding:4px 8px;font-size:12px;color:#fff">Parar</button></sc-if>
+                          <sc-if value="{{ a.idle }}" hint-placeholder-val="{{ true }}"><button onClick="{{ a.openRun }}" style="border-radius:8px;border:1px solid #059669;background:#059669;padding:4px 8px;font-size:12px;color:#fff">{{ a.runLabel }}</button></sc-if>
+                        </div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </section>
+            </sc-for>
+            <section style="display:flex;flex-direction:column;gap:8px">
+              <h2 style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Execuções recentes</h2>
+              <ul style="margin:0;padding:0;list-style:none;overflow:hidden;border-radius:12px;border:1px solid #1e293b">
+                <sc-for list="{{ runRows }}" as="r" hint-placeholder-count="5">
+                  <li style="border-top:1px solid rgba(30,41,59,.6)"><button onClick="{{ r.open }}" style="display:flex;width:100%;align-items:center;gap:12px;padding:8px 12px;text-align:left;font-size:14px;border:0;color:#f1f5f9;background:{{ r.bg }}" style-hover="background:rgba(30,41,59,.6)">
+                    <span style="width:144px;flex-shrink:0;border-radius:4px;padding:2px 8px;text-align:center;font-size:12px;background:{{ r.badgeBg }};color:{{ r.badgeColor }}">{{ r.badge }}</span><span style="min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.actionName }}</span><span style="flex-shrink:0;font-size:12px;color:#64748b">{{ r.started }}</span><span style="width:64px;flex-shrink:0;text-align:right;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#64748b">{{ r.duration }}</span></button></li>
+                </sc-for>
+              </ul>
+            </section>
+          </div>
+          <sc-if value="{{ hasRun }}" hint-placeholder-val="{{ true }}">
+            <aside style="display:flex;width:640px;flex-shrink:0;min-width:0;flex-direction:column;gap:12px;border-left:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                <div style="min-width:0;flex:1"><h2 style="margin:0;font-size:18px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ run.actionName }}</h2><p style="margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#64748b">{{ run.cwd }} $ {{ run.command }}</p></div>
+                <span style="border-radius:4px;padding:2px 8px;font-size:12px;background:{{ run.badgeBg }};color:{{ run.badgeColor }}">{{ run.badge }}</span>
+                <button onClick="{{ closeRun }}" style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">✕</button>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;color:#94a3b8"><span>início {{ run.started }}</span><span>· {{ run.duration }}</span><span>· PID {{ run.pid }}</span>
+                <div style="margin-left:auto;display:flex;gap:8px"><sc-if value="{{ run.running }}" hint-placeholder-val="{{ true }}"><button style="border-radius:8px;border:1px solid #e11d48;background:#e11d48;padding:4px 8px;font-size:12px;color:#fff">Parar</button></sc-if><sc-if value="{{ run.done }}" hint-placeholder-val="{{ false }}"><button style="border-radius:8px;border:1px solid #059669;background:#059669;padding:4px 8px;font-size:12px;color:#fff">Executar de novo</button></sc-if><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">Baixar log</button></div></div>
+              <div style="min-height:320px;flex:1;background:#000;border-radius:4px;padding:8px;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.4;color:#e2e8f0;overflow:auto;white-space:pre-wrap">{{ run.lines }}</div>
+              <p style="margin:0;font-size:12px;color:#64748b">O terminal é interativo: digite aqui para responder ao processo (ex.: senha do ssh).</p>
+            </aside>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isRepos }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Repositórios" style="max-width:1024px;display:flex;flex-direction:column;gap:24px">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px"><h1 style="margin:0;font-size:24px;font-weight:600;line-height:32px">Repositórios</h1><button style="margin-left:auto;border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">↻ Procurar de novo</button></div>
+          <p style="margin:0;font-size:14px;color:#94a3b8">Em uma ação, crie um parâmetro do tipo <strong>repositório</strong>: na hora de executar você escolhe o repo, a ação roda na pasta dele e os demais parâmetros recebem as variáveis salvas aqui. <a href="#" style="color:#94a3b8;text-decoration:underline">Ir para Ações</a></p>
+          <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px;display:flex;flex-direction:column;gap:12px;font-size:14px">
+            <h2 style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Pastas de projetos</h2>
+            <div style="display:flex;align-items:center;gap:8px"><code style="flex:1;font-family:ui-monospace,Menlo,monospace;color:#e2e8f0">~/github</code><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">✕</button></div>
+            <form style="display:flex;gap:8px"><input placeholder="~/github" style="flex:1;border-radius:8px;border:1px solid #334155;background:#0f172a;padding:6px 12px;font-size:14px;color:#f1f5f9;font-family:ui-monospace,Menlo,monospace" /><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">+ Pasta</button></form>
+            <label style="display:flex;align-items:center;gap:8px"><span style="color:#94a3b8">Profundidade</span><select style="border-radius:8px;border:1px solid #334155;background:#0f172a;padding:6px 12px;font-size:14px;color:#f1f5f9"><option>2 níveis</option></select><span style="font-size:12px;color:#64748b">~/github/org/projeto = 2 níveis</span></label>
+            <button disabled style="align-self:flex-start;border-radius:8px;border:1px solid #059669;background:#059669;padding:4px 8px;font-size:12px;color:#fff;opacity:.5">Salvar e procurar</button>
+          </section>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px"><input placeholder="Buscar por nome, owner/repo ou pasta" style="width:288px;border-radius:8px;border:1px solid #334155;background:#0f172a;padding:6px 12px;font-size:14px;color:#f1f5f9" /><label style="display:flex;align-items:center;gap:8px;font-size:14px;color:#cbd5e1"><input type="checkbox" checked="{{ true }}" /> Só GitHub (4 de 6)</label></div>
+          <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ repoRows }}" as="r" hint-placeholder-count="4">
+              <li style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:12px">
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px"><span style="font-weight:600">{{ r.name }}</span><a href="#" style="font-size:14px;color:#38bdf8">{{ r.github }} ↗</a><code style="border-radius:4px;background:#1e293b;padding:0 6px;font-size:12px;color:#cbd5e1;font-family:ui-monospace,Menlo,monospace">{{ r.branch }}</code><button style="margin-left:auto;border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">{{ r.varsLabel }}</button></div>
+                <p style="margin:4px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#64748b">{{ r.path }}</p>
+                <p style="margin:4px 0 0;font-size:12px;color:#94a3b8;font-family:ui-monospace,Menlo,monospace">{{ r.vars }}</p>
+              </li>
+            </sc-for>
+          </ul>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Configurações" style="max-width:768px;display:flex;flex-direction:column;gap:24px">
+          <h1 style="margin:0;font-size:24px;font-weight:600;line-height:32px">Configurações</h1>
+          <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px;display:flex;flex-direction:column;gap:16px;font-size:14px">
+            <h2 style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Notificações do macOS</h2>
+            <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" checked="{{ true }}" /> Enviar notificações</label>
+            <div style="display:flex;flex-direction:column;gap:12px;padding-left:24px">
+              <label style="display:flex;align-items:center;gap:8px"><span style="width:176px;color:#94a3b8">Execuções de ações</span><select style="border-radius:8px;border:1px solid #334155;background:#0f172a;padding:6px 12px;font-size:14px;color:#f1f5f9"><option>só quando falharem</option></select></label>
+              <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" checked="{{ true }}" /> Serviços: caiu, sem resposta na porta, reiniciando, conectado</label>
+              <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" checked="{{ true }}" /> Disco acima do limite de alerta (<a href="#" style="color:#34d399">ajustar limite</a>)</label>
+            </div>
+            <div><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:4px 8px;font-size:12px;color:#e2e8f0">Enviar notificação de teste</button></div>
+            <p style="margin:0;font-size:12px;color:#64748b">Usa <code>osascript</code>. Se não aparecer, permita notificações do “Script Editor” em Ajustes do Sistema → Notificações.</p>
+          </section>
+          <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+            <h2 style="margin:0 0 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Aparência</h2>
+            <div style="display:flex;gap:8px"><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">Sistema</button><button style="border-radius:8px;border:1px solid #334155;background:#1e293b;padding:6px 12px;font-size:14px;color:#e2e8f0">Claro</button><button style="border-radius:8px;border:1px solid #059669;background:#059669;padding:6px 12px;font-size:14px;color:#fff">Escuro</button></div>
+            <p style="margin:8px 0 0;font-size:12px;color:#64748b">“Sistema” acompanha o modo claro/escuro do macOS. O terminal das ações fica sempre escuro.</p>
+          </section>
+          <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+            <h2 style="margin:0 0 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Atalhos de teclado</h2>
+            <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:14px;color:#cbd5e1">
+              <sc-for list="{{ shortcuts }}" as="s" hint-placeholder-count="6"><li style="display:flex;align-items:center;gap:12px"><kbd style="width:64px;flex-shrink:0;border-radius:4px;border:1px solid #334155;background:#1e293b;padding:2px 6px;text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:12px">{{ s.keys }}</kbd>{{ s.description }}</li></sc-for>
+            </ul>
+          </section>
+          <section style="border-radius:12px;border:1px solid #1e293b;background:rgba(15,23,42,.6);padding:16px">
+            <h2 style="margin:0 0 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8">Iniciar com o Mac</h2>
+            <p style="margin:0;font-size:14px;color:#cbd5e1">Para o macpit subir ao fazer login (e, com ele, os serviços marcados como “iniciar junto”), rode no terminal:</p>
+            <pre style="margin:8px 0 0;border-radius:8px;background:rgba(0,0,0,.4);padding:8px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#e2e8f0">./scripts/install-launchagent.sh</pre>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ paletteOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closePalette }}" style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:flex;justify-content:center;align-items:flex-start;padding-top:12vh">
+          <div onClick="{{ stop }}" style="width:100%;max-width:576px;border-radius:12px;border:1px solid #334155;background:#0f172a;color:#f1f5f9">
+            <input autoFocus="{{ true }}" placeholder="Executar ação, ir para página, buscar processo ou porta…" style="width:100%;box-sizing:border-box;border:0;border-bottom:1px solid #1e293b;background:transparent;padding:12px 16px;font-size:16px;color:#f1f5f9;outline:none" />
+            <ul style="margin:0;padding:4px 0;list-style:none;max-height:320px;overflow:auto">
+              <sc-for list="{{ paletteItems }}" as="it" hint-placeholder-count="6"><li><button style="display:flex;width:100%;align-items:center;gap:12px;padding:8px 16px;text-align:left;font-size:14px;border:0;color:#f1f5f9;background:{{ it.bg }}"><span style="width:48px;flex-shrink:0;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#64748b">{{ it.kind }}</span><span style="min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ it.label }}</span><span style="flex-shrink:0;font-size:12px;color:#64748b">{{ it.hint }}</span></button></li></sc-for>
+            </ul>
+            <div style="display:flex;gap:16px;border-top:1px solid #1e293b;padding:8px 16px;font-size:11px;color:#64748b"><span>↑↓ navegar</span><span>↵ escolher</span><span>esc fechar</span></div>
+          </div>
+        </div>
+      </sc-if>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { screen: 'home', selectedPid: 2231, runId: 'r1', query: '', tree: false, vol: '/', palette: false };
+  componentDidMount() {
+    this._key = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); this.setState(s => ({ palette: !s.palette })); } if (e.key === 'Escape') this.setState({ palette: false }); };
+    window.addEventListener('keydown', this._key);
+    if (!window.MACPIT_DATA) this._t = setInterval(() => { if (window.MACPIT_DATA) { clearInterval(this._t); this.forceUpdate(); } }, 50);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this._key); clearInterval(this._t); }
+  fb(b, d = 1) { if (b >= 1024 ** 3) return (b / 1024 ** 3).toLocaleString('pt-BR', { maximumFractionDigits: d }) + ' GB'; if (b >= 1024 ** 2) return (b / 1024 ** 2).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + ' MB'; return Math.round(b / 1024) + ' KB'; }
+  fd(s) { if (s >= 86400) return Math.floor(s / 86400) + 'd ' + Math.floor((s % 86400) / 3600) + 'h'; if (s >= 3600) return Math.floor(s / 3600) + 'h ' + Math.floor((s % 3600) / 60) + 'min'; if (s >= 60) return Math.floor(s / 60) + 'min'; return Math.round(s) + 's'; }
+  stateLabel(st) { const c = st[0]; return { R: 'executando', S: 'dormindo', I: 'ocioso', T: 'parado', Z: 'zumbi', U: 'espera' }[c] || st; }
+  spark(values, max) {
+    const W = 100, H = 30, top = Math.max(max || 0, ...values); const n = values.length;
+    const pts = values.map((v, i) => `${((i / (n - 1)) * W).toFixed(2)},${(H - (Math.min(v, top) / top) * H).toFixed(2)}`);
+    return React.createElement('svg', { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none', style: { width: '100%', height: 40, display: 'block' } },
+      React.createElement('polygon', { points: `0,${H} ${pts.join(' ')} ${W},${H}`, fill: 'currentColor', opacity: .15 }),
+      React.createElement('polyline', { points: pts.join(' '), fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, vectorEffect: 'non-scaling-stroke', strokeLinejoin: 'round' }));
+  }
+  chart(points, alert) {
+    const W = 800, H = 224, L = 48, B = 22; const xs = (i) => L + (i / (points.length - 1)) * (W - L - 8); const ys = (p) => 8 + (1 - p / 100) * (H - B - 8);
+    const line = points.map((p, i) => `${xs(i)},${ys(p.pct)}`).join(' ');
+    const grid = [0, 25, 50, 75, 100].map(v => React.createElement('g', { key: v }, React.createElement('line', { x1: L, x2: W - 8, y1: ys(v), y2: ys(v), stroke: '#1e293b' }), React.createElement('text', { x: L - 6, y: ys(v) + 4, fill: '#64748b', fontSize: 11, textAnchor: 'end' }, v + '%')));
+    return React.createElement('svg', { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none', style: { width: '100%', height: '100%', display: 'block' } },
+      React.createElement('defs', null, React.createElement('linearGradient', { id: 'df', x1: 0, y1: 0, x2: 0, y2: 1 }, React.createElement('stop', { offset: '0%', stopColor: '#38bdf8', stopOpacity: .35 }), React.createElement('stop', { offset: '100%', stopColor: '#38bdf8', stopOpacity: 0 }))),
+      grid,
+      React.createElement('line', { x1: L, x2: W - 8, y1: ys(alert), y2: ys(alert), stroke: '#f43f5e', strokeDasharray: '4 4' }),
+      React.createElement('text', { x: W - 12, y: ys(alert) - 4, fill: '#f43f5e', fontSize: 11, textAnchor: 'end' }, `alerta ${alert}%`),
+      React.createElement('polygon', { points: `${xs(0)},${ys(0)} ${line} ${xs(points.length - 1)},${ys(0)}`, fill: 'url(#df)' }),
+      React.createElement('polyline', { points: line, fill: 'none', stroke: '#38bdf8', strokeWidth: 2 }));
+  }
+  renderVals() {
+    const D = window.MACPIT_DATA; if (!D) return {};
+    const s = this.state; const go = (screen) => () => this.setState({ screen, palette: false });
+    const navItems = [['home', 'Visão geral', '◉'], ['processes', 'Processos', '≡'], ['ports', 'Portas', '⇄'], ['disk', 'Disco', '◧'], ['actions', 'Ações', '▶'], ['repos', 'Repositórios', '⎇'], ['settings', 'Configurações', '⚙']];
+    const nav = navItems.map(([id, label, icon]) => ({ label, icon, go: go(id), bg: s.screen === id ? '#1e293b' : 'transparent', color: s.screen === id ? '#f8fafc' : '#94a3b8' }));
+    const STATUS = { running: ['rgba(6,78,59,.6)', '#6ee7b7', 'rodando'], exited: ['#1e293b', '#cbd5e1', 'concluída'], failed: ['rgba(136,19,55,.6)', '#fda4af', 'falhou'], killed: ['rgba(120,53,15,.6)', '#fde68a', 'parada'] };
+    const describe = (r) => r.status === 'failed' && r.exitCode != null ? `falhou (código ${r.exitCode})` : r.status === 'killed' && r.signal ? `parada (${r.signal})` : STATUS[r.status][2];
+    const svcBadge = (sv) => ({ up: ['rgba(6,78,59,.6)', '#6ee7b7', `conectado :${sv.port}`], unhealthy: ['rgba(136,19,55,.6)', '#fda4af', `sem resposta :${sv.port}`], stopped: ['#1e293b', '#94a3b8', sv.lastExit ? `parado · ${sv.lastExit}` : 'parado'] })[sv.state];
+    const q = s.query.toLowerCase();
+    let procs = D.processes.filter(p => !q || p.name.toLowerCase().includes(q) || p.command.toLowerCase().includes(q) || String(p.pid).includes(q)).sort((a, b) => b.cpuPct - a.cpuPct);
+    const depthOf = (p) => { let d = 0, cur = p; while (cur && cur.ppid > 0) { cur = D.processes.find(x => x.pid === cur.ppid); if (cur) d++; if (d > 6) break; } return d; };
+    if (s.tree) { const out = []; const walk = (ppid, depth) => D.processes.filter(p => p.ppid === ppid).sort((a, b) => b.cpuPct - a.cpuPct).forEach(p => { out.push({ p, depth }); walk(p.pid, depth + 1); }); walk(0, 0); procs = out.map(o => Object.assign({}, o.p, { _d: o.depth })); }
+    const procRows = procs.map(p => { const d = s.tree ? p._d : 0; return { pid: p.pid, name: p.name, user: p.user, cpu: p.cpuPct.toFixed(1), mem: this.fb(p.rssBytes, 0), state: this.stateLabel(p.state), time: this.fd(p.elapsedSec), command: p.command, indent: d * 14 + 'px', prefix: d > 0 ? '└ ' : '', self: p.pid === D.health.pid, bg: p.pid === s.selectedPid ? 'rgba(6,78,59,.3)' : 'transparent', opacity: 1, userColor: p.user === 'root' ? '#fda4af' : '#94a3b8', cpuColor: p.cpuPct >= 80 ? '#fb7185' : p.cpuPct >= 30 ? '#fcd34d' : '#cbd5e1', stateColor: p.state.startsWith('Z') ? '#fb7185' : '#64748b', select: () => this.setState({ selectedPid: p.pid }) }; });
+    const sp = D.processes.find(p => p.pid === s.selectedPid); const parent = sp && D.processes.find(p => p.pid === sp.ppid);
+    const sel = sp ? { name: sp.name, pid: sp.pid, user: sp.user, cpu: sp.cpuPct.toFixed(1), mem: this.fb(sp.rssBytes, 0), memPct: sp.memPct.toFixed(1), state: this.stateLabel(sp.state), stateRaw: sp.state, time: this.fd(sp.elapsedSec), started: new Date(sp.startedAt).toLocaleString('pt-BR'), command: sp.command, ppid: sp.ppid, parentName: parent ? parent.name : '—' } : {};
+    const totalCpu = D.processes.reduce((a, p) => a + p.cpuPct, 0).toFixed(0);
+    const portRows = D.ports.map(e => ({ ...e, scopeLabel: e.scope === 'network' ? 'rede' : 'local', scopeBg: e.scope === 'network' ? 'rgba(120,53,15,.6)' : '#1e293b', scopeColor: e.scope === 'network' ? '#fde68a' : '#94a3b8', userColor: e.user === 'root' ? '#fda4af' : '#94a3b8', hasUrl: e.protocol === 'TCP' && [5173, 3000, 8080, 7777].includes(e.port), goProcess: () => this.setState({ screen: 'processes', selectedPid: e.pid }) }));
+    const lvl = (pct) => pct >= D.alertPct ? ['#fb7185', '#f43f5e'] : pct >= D.alertPct - 10 ? ['#fcd34d', '#f59e0b'] : ['#34d399', '#10b981'];
+    const volRows = D.volumes.map(v => { const [t, b] = lvl(v.usedPct); const active = v.mount === s.vol; return { name: v.name, mount: v.mount, pct: v.usedPct.toFixed(1), pctColor: t, barColor: b, used: this.fb(v.usedBytes, 0), avail: this.fb(v.availableBytes, 0), total: this.fb(v.totalBytes, 0), border: active ? '#0284c7' : '#1e293b', bg: active ? '#0f172a' : 'rgba(15,23,42,.6)', select: () => this.setState({ vol: v.mount }) }; });
+    const volName = (D.volumes.find(v => v.mount === s.vol) || D.volumes[0]).name;
+    const duTotal = 412 * 1024 ** 3, duMax = D.duEntries[0].sizeBytes;
+    const duRows = D.duEntries.map(e => ({ name: e.name, size: this.fb(e.sizeBytes), pct: Math.round(e.sizeBytes / duTotal * 100) + '%', barW: (e.sizeBytes / duMax * 100) + '%' }));
+    const groupsMap = {}; const favs = D.actions.filter(a => a.favorite);
+    D.actions.filter(a => !a.favorite).forEach(a => { (groupsMap[a.group || ''] ||= []).push(a); });
+    const mkA = (a) => { const sv = a.persistent ? a.service : null; const running = sv ? sv.state !== 'stopped' : a.runningCount > 0; const b = sv ? svcBadge(sv) : a.lastRun ? [STATUS[a.lastRun.status][0], STATUS[a.lastRun.status][1], describe(a.lastRun) + ' · ' + new Date(a.lastRun.startedAt).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })] : ['transparent', '#475569', 'nunca executada']; return { name: a.name, icon: a.icon || (a.persistent ? '⇄' : '▶'), favorite: a.favorite, persistent: a.persistent, serviceTag: 'serviço' + (a.autoRestart ? ' · reinicia' : '') + (a.autoStart ? ' · no boot' : ''), command: a.command, meta: (a.cwd ? 'em ' + a.cwd : '') + (a.params.length ? (a.cwd ? ' · ' : '') + 'pede ' + a.params.map(p => p.label || p.name).join(', ') : ''), border: !running ? '#1e293b' : sv && sv.state === 'unhealthy' ? '#be123c' : '#047857', badgeBg: b[0], badgeColor: b[1], badge: b[2], running, idle: !running, runLabel: sv ? '▶ Iniciar' : '▶ Executar', openRun: () => this.setState({ runId: (sv && sv.runId) || (a.lastRun && a.lastRun.id) || 'r1' }) }; };
+    const actionGroups = [{ title: 'Favoritas', items: favs.map(mkA) }, ...Object.keys(groupsMap).sort((a, b) => a === '' ? 1 : b === '' ? -1 : a.localeCompare(b)).map(k => ({ title: k || 'Sem grupo', items: groupsMap[k].map(mkA) }))];
+    const runRows = D.runs.map(r => ({ actionName: r.actionName, badge: describe(r), badgeBg: STATUS[r.status][0], badgeColor: STATUS[r.status][1], started: new Date(r.startedAt).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'medium' }), duration: r.status === 'running' ? 'rodando…' : this.fd(((r.endedAt || D.now) - r.startedAt) / 1000), bg: r.id === s.runId ? 'rgba(30,41,59,.6)' : 'transparent', open: () => this.setState({ runId: r.id }) }));
+    const rr = D.runs.find(r => r.id === s.runId);
+    const run = rr ? { actionName: rr.actionName, cwd: rr.cwd, command: rr.command, badge: describe(rr), badgeBg: STATUS[rr.status][0], badgeColor: STATUS[rr.status][1], started: new Date(rr.startedAt).toLocaleString('pt-BR'), duration: this.fd(((rr.endedAt || D.now) - rr.startedAt) / 1000), pid: rr.pid, running: rr.status === 'running', done: rr.status !== 'running', lines: (D.terminalLines[rr.id] || ['$ ' + rr.command, '(saída não capturada)']).join('\n') } : {};
+    const services = D.actions.filter(a => a.persistent).map(a => { const b = svcBadge(a.service); return { icon: a.icon || '⇄', name: a.name, badge: b[2], badgeBg: b[0], badgeColor: b[1] }; });
+    const repoRows = D.repos.filter(r => r.github).map(r => ({ name: r.name, github: r.github, branch: r.branch, path: r.path, varsLabel: r.vars.length ? `${r.vars.length} variáve${r.vars.length === 1 ? 'l' : 'is'}` : '+ Variáveis', vars: r.vars.map(v => v.name + (v.secret ? ' 🔒' : '')).join('  ') }));
+    const shortcuts = [['⌘K', 'Paleta de comandos (executar ações, ir para páginas, buscar)'], ['g h', 'Ir para Visão geral'], ['g p', 'Ir para Processos'], ['g o', 'Ir para Portas'], ['g d', 'Ir para Disco'], ['g a', 'Ir para Ações'], ['g r', 'Ir para Repositórios'], ['g s', 'Ir para Configurações'], ['/', 'Focar a busca da página'], ['t', 'Alternar entre tema claro e escuro'], ['?', 'Mostrar os atalhos'], ['Esc', 'Fechar diálogo / painel']].map(([keys, description]) => ({ keys, description }));
+    const paletteItems = [['ação', 'Túnel banco produção', 'conectado :5432'], ['ação', 'Dev server', '↵ iniciar'], ['ação', 'Deploy staging', 'pede ambiente'], ['página', 'Processos', 'g p'], ['página', 'Portas', 'g o'], ['busca', 'Buscar processo “…”', ''], ['github', 'acme/app', 'abrir ↗']].map(([kind, label, hint], i) => ({ kind, label, hint, bg: i === 0 ? '#1e293b' : 'transparent' }));
+    return {
+      nav, isHome: s.screen === 'home', isProcesses: s.screen === 'processes', isPorts: s.screen === 'ports', isDisk: s.screen === 'disk', isActions: s.screen === 'actions', isRepos: s.screen === 'repos', isSettings: s.screen === 'settings',
+      sparkCpu: this.spark(D.system.history.cpu, 100), sparkMem: this.spark(D.system.history.mem, 100), sparkLoad: this.spark(D.system.history.load, 16), services, goActions: go('actions'),
+      procRows, procCount: procRows.length === D.processes.length ? D.processes.length : `${procRows.length} de ${D.processes.length}`, totalCpu, query: s.query, setQuery: (e) => this.setState({ query: e.target.value }), toggleTree: () => this.setState({ tree: !s.tree }), treeBorder: s.tree ? '#059669' : '#334155', treeBg: s.tree ? '#059669' : '#1e293b', treeColor: s.tree ? '#fff' : '#e2e8f0', hasSelected: !!sp, sel, deselect: () => this.setState({ selectedPid: null }),
+      portRows, volRows, volName, diskChart: this.chart(D.diskHistory, D.alertPct), duRows,
+      actionGroups, actionCols: s.runId ? 2 : 3, runRows, hasRun: !!rr, run, closeRun: () => this.setState({ runId: null }),
+      repoRows, shortcuts, paletteOpen: s.palette, paletteItems, closePalette: () => this.setState({ palette: false }), openHelp: () => this.setState({ palette: true }), stop: (e) => e.stopPropagation(),
+    };
+  }
+}
+</script>
+</body>
+</html>

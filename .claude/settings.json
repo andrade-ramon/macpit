@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm build)",
+      "Bash(pnpm test*)",
+      "Bash(pnpm lint*)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm --filter *)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(ps *)",
+      "Bash(lsof *)",
+      "Bash(df *)"
+    ],
+    "deny": ["Bash(sudo *)", "Bash(rm -rf /*)", "Read(.env)"]
+  }
+}

@@ -1,0 +1,13 @@
+Filesystem     1024-blocks      Used Available Capacity  Mounted on
+/dev/disk3s1s1   239362496  12152804  25147292    33%    /
+devfs                  202       202         0   100%    /dev
+/dev/disk3s6     239362496   6291800  25147292    21%    /System/Volumes/VM
+/dev/disk3s2     239362496  12111368  25147292    33%    /System/Volumes/Preboot
+/dev/disk3s4     239362496     80648  25147292     1%    /System/Volumes/Update
+/dev/disk1s2        512000      6164    492680     2%    /System/Volumes/xarts
+/dev/disk3s5     239362496 181979612  25147292    88%    /System/Volumes/Data
+map auto_home            0         0         0   100%    /System/Volumes/Data/home
+/dev/disk3s3     239362496   1464908  25147292     6%    /Volumes/Recovery
+/dev/disk5s1     976762584 488381292 488381292    50%    /Volumes/Backup Externo
+//alice@nas.local/share  1953514584 1000000000 953514584    52%    /Volumes/share
+/dev/disk9s1        8388608   8000000    388608    96%    /Library/Developer/CoreSimulator/Volumes/iOS_22A

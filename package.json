@@ -1,0 +1,45 @@
+{
+  "name": "macpit",
+  "private": true,
+  "version": "0.0.0",
+  "license": "MIT",
+  "description": "Dashboard local para monitorar processos, portas e disco do Mac e executar comandos salvos com um clique.",
+  "author": "Ramon Andrade",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrade-ramon/macpit.git"
+  },
+  "homepage": "https://github.com/andrade-ramon/macpit#readme",
+  "bugs": {
+    "url": "https://github.com/andrade-ramon/macpit/issues"
+  },
+  "packageManager": "pnpm@12.4.2",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "postinstall": "node scripts/fix-node-pty.mjs",
+    "dev": "pnpm --filter @macpit/shared build && pnpm -r --parallel --filter \"./apps/*\" --filter @macpit/shared dev",
+    "build": "pnpm -r build",
+    "start": "node apps/server/dist/index.js",
+    "test": "pnpm --filter @macpit/shared build && pnpm -r test",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm -r typecheck",
+    "e2e": "pnpm build && playwright test"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.3",
+    "eslint": "^10.11.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.9",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.70.1",
+    "vitest": "^5.0.2"
+  }
+}

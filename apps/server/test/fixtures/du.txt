@@ -1,0 +1,5 @@
+410652	/Users/alice/github/logistica-kit
+1243420	/Users/alice/github/.codegraph
+20000000	/Users/alice/github/big project
+16000000	/Users/alice/github/other
+37655668	/Users/alice/github

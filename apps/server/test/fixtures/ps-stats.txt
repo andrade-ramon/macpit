@@ -1,0 +1,9 @@
+    1     0     0 root               0,0  0,1  18768 488723232 Ss   01-12:56:36 /sbin/launchd
+  339     1     0 root               0.0  0.3  42000 488940176 Ss   01-12:56:07 /usr/libexec/logd
+  453     1   501 alice              1,5  0,2  37600 489103392 Ss   01-12:56:06 /System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow
+ 1200     1   501 alice             12,3  2,5 420000 1865432160 S       04:55:00 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+ 1201  1200   501 alice              0,4  0,8 130000 1865000000 S       04:54:59 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)
+ 2000   453   501 alice              0,0  0,0   2400 410000000 Ss        00:41 -zsh
+ 2001  2000   501 alice             99,9  0,1   9000 410100000 R+        00:00 node
+ 2002  2000   501 alice              0,0  0,0      0        0 Z         00:43 (git)
+ 3000     1    -2 nobody             0,0  0,0   1000 400000000 S    3-01:00:00 /usr/sbin/distnoted

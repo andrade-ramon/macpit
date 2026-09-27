@@ -1,0 +1,371 @@
+@import 'tailwindcss';
+@import '@fontsource/instrument-sans/400.css';
+@import '@fontsource/instrument-sans/500.css';
+@import '@fontsource/instrument-sans/600.css';
+@import '@fontsource/instrument-sans/700.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+@import '@fontsource/jetbrains-mono/600.css';
+@import './palettes.css';
+
+/*
+ * Design "Redesign Cockpit" (docs/design/Redesign Cockpit.dc.html).
+ * As cores são variáveis (--bg, --panel, --accent…) redefinidas por paleta em palettes.css;
+ * aqui elas viram utilitários do Tailwind: bg-panel, text-text2, border-line, bg-accent-soft…
+ */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel2: var(--panel2);
+  --color-panel3: var(--panel3);
+  --color-line: var(--line);
+  --color-line2: var(--line2);
+  --color-text: var(--text);
+  --color-text2: var(--text2);
+  --color-text3: var(--text3);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-violet: #a78bfa;
+  --color-term: #000;
+  --color-term-text: #d4d8e2;
+  --color-term-dim: #7c8391;
+  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:root {
+  --row: 44px;
+}
+:root[data-density='compact'] {
+  --row: 36px;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  button {
+    cursor: pointer;
+    color: inherit;
+  }
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--text3);
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+  }
+  kbd,
+  code,
+  pre {
+    font-family: var(--font-mono);
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line2);
+    border-radius: 99px;
+    border: 2px solid var(--bg);
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@keyframes bm-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes bm-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@layer components {
+  /* rótulo de seção: "ESTE MAC", "SERVIÇOS"… */
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  /* rótulo de card (um pouco maior) */
+  .card-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .card {
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    padding: 20px;
+  }
+  .tile {
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+  }
+
+  /* botões — tamanhos do design: sm 32px, padrão 36px, md 40px, lg 44px, xl 46px */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 9px;
+    border: 1px solid var(--line2);
+    background: var(--panel2);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .btn:hover:not(:disabled) {
+    border-color: var(--text3);
+    text-decoration: none;
+  }
+  .btn-sm {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 12.5px;
+  }
+  .btn-md {
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 10px;
+    font-size: 13.5px;
+  }
+  .btn-lg {
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 11px;
+    font-size: 14px;
+  }
+  .btn-xl {
+    height: 46px;
+    padding: 0 16px;
+    border-radius: 12px;
+    font-size: 14.5px;
+  }
+  .btn-primary {
+    border: 1px solid transparent;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  .btn-primary:hover:not(:disabled) {
+    border-color: transparent;
+    filter: brightness(1.08);
+  }
+  .btn-danger {
+    border: 1px solid transparent;
+    background: var(--danger-soft);
+    color: var(--danger);
+    font-weight: 600;
+  }
+  .btn-danger:hover:not(:disabled) {
+    border-color: var(--danger);
+  }
+  .btn-danger-outline {
+    border: 1px solid var(--danger);
+    background: var(--danger-soft);
+    color: var(--danger);
+    font-weight: 600;
+  }
+  .btn-danger-solid {
+    border: 1px solid transparent;
+    background: var(--danger);
+    color: #1a0508;
+    font-weight: 700;
+  }
+  .btn-danger-solid:hover:not(:disabled) {
+    border-color: transparent;
+    filter: brightness(1.08);
+  }
+  .btn-ghost {
+    border: 0;
+    background: transparent;
+    color: var(--text2);
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--panel2);
+    color: var(--text);
+  }
+  .btn-icon {
+    width: 36px;
+    padding: 0;
+    color: var(--text2);
+  }
+  .link-btn {
+    border: 0;
+    background: none;
+    padding: 0;
+    color: var(--accent);
+    font-size: 12px;
+  }
+  .link-btn:hover {
+    text-decoration: underline;
+  }
+
+  .input {
+    height: 40px;
+    border-radius: 9px;
+    border: 1px solid var(--line2);
+    background: var(--bg);
+    color: var(--text);
+    padding: 0 12px;
+    font-size: 13.5px;
+  }
+  textarea.input {
+    height: auto;
+    padding: 10px 12px;
+    line-height: 1.5;
+  }
+  select.input {
+    padding: 0 10px;
+  }
+  .input-panel {
+    background: var(--panel);
+  }
+
+  /* caixa preta de comando/terminal */
+  .term-box {
+    margin: 0;
+    border-radius: 10px;
+    background: #000;
+    padding: 10px 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    color: #d4d8e2;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .kbd {
+    border-radius: 6px;
+    border: 1px solid var(--line2);
+    background: var(--panel2);
+    padding: 3px 8px;
+    font-size: 12px;
+    color: var(--text);
+    text-align: center;
+  }
+
+  /* linha clicável de lista (36–40px, hover panel2) */
+  .list-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    width: 100%;
+  }
+  .list-row:hover {
+    background: var(--panel2);
+  }
+
+  /* cabeçalho fixo de tabela */
+  .table-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    height: 40px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel2);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .data-row {
+    padding: 0 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--line);
+  }
+  .data-row:hover {
+    background: var(--panel2);
+  }
+
+  /* modais (paleta, confirmação, atalhos) */
+  .modal {
+    border-radius: 16px;
+    border: 1px solid var(--line2);
+    background: var(--panel);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    color: var(--text);
+    padding: 0;
+  }
+  .modal::backdrop {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+  }
+
+  .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 99px;
+    flex-shrink: 0;
+  }
+  .anim-pulse {
+    animation: bm-pulse 1.8s infinite;
+  }
+  .anim-blink {
+    animation: bm-blink 1s steps(1) infinite;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+}

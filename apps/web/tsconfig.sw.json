@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2023", "WebWorker"],
+    "types": [],
+    "noEmit": true
+  },
+  "include": ["src/sw/sw.ts", "src/sw/routing.ts"]
+}
