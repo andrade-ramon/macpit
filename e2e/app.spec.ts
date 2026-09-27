@@ -81,7 +81,8 @@ test('serviço: porta esperada → "conectado"; parar libera', async ({ page, re
   const port = 7811;
   await createAction(request, {
     name: 'E2E serviço',
-    command: `exec python3 -m http.server ${port} --bind 127.0.0.1`,
+    // Node (já aquecido) em vez de python3: no runner macOS do CI o 1º python3 levou > 15 s para abrir a porta
+    command: `exec node -e "require('node:net').createServer().listen(${port}, '127.0.0.1')"`,
     persistent: true,
     expectedPort: port,
   });
@@ -89,7 +90,7 @@ test('serviço: porta esperada → "conectado"; parar libera', async ({ page, re
   await page.goto('/actions');
   const svc = card(page, 'E2E serviço');
   await svc.getByRole('button', { name: /Iniciar/ }).click();
-  await expect(svc.getByText(`conectado :${port}`)).toBeVisible({ timeout: 15_000 });
+  await expect(svc.getByText(`conectado :${port}`)).toBeVisible({ timeout: 30_000 });
   await svc.getByRole('button', { name: /Parar/ }).click();
   await expect(svc.getByText(/^parado/)).toBeVisible({ timeout: 10_000 });
 });
