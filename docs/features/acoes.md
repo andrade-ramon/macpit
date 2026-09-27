@@ -18,7 +18,7 @@ Detalhes em [06-modelo-dados.md](../06-modelo-dados.md).
 
 - **Comando:** `MACPIT_SHELL -lc "<comando>"` (padrão `/bin/bash`) dentro de um pseudo-terminal (**node-pty**, `xterm-256color`).
   - O `-l` (shell de login) carrega `~/.bash_profile`, PATH, `ssh-agent` etc.
-  - Este é o **único** ponto do sistema em que um comando passa por um shell (CLAUDE.md, regra 3).
+  - Este é o **único** ponto do sistema em que um comando passa por um shell (AGENTS.md, regra 3).
 - **Ambiente:** o do servidor, mais as variáveis da ação, mais `TERM`, `COLORTERM`, `MACPIT_RUN_ID` e `MACPIT_ACTION_ID`.
 - **Usuário:** o mesmo que iniciou o servidor. Com `sudo ./scripts/start.sh`, a ação roda como root, e o editor mostra isso em vermelho.
 - **Saída:**

@@ -64,7 +64,12 @@ pnpm e2e          # ponta a ponta (Playwright, usa o Google Chrome instalado)
 pnpm typecheck && pnpm lint && pnpm format
 ```
 
-Instruções para agentes de IA (Claude Code é o principal): [CLAUDE.md](CLAUDE.md).
+### Com agentes de IA (Claude Code e Codex)
+
+As regras do projeto ficam num só lugar, o [AGENTS.md](AGENTS.md), que o **Codex** lê direto e o **Claude Code** importa pelo [CLAUDE.md](CLAUDE.md). Os roteiros de trabalho (implementar uma funcionalidade, atualizar a documentação, revisão de segurança) estão em [docs/agents/](docs/agents/):
+
+- **Claude Code:** `/implement-feature`, `/update-docs`, `/security-review` e o subagente `security-reviewer`.
+- **Codex:** rode `./scripts/install-codex-prompts.sh` uma vez e use `/prompts:macpit-implement-feature`, `/prompts:macpit-update-docs` e `/prompts:macpit-security-review`.
 
 ## Segurança
 

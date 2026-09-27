@@ -106,7 +106,7 @@ interface LiveRun {
 
 /**
  * Executa ações num pseudo-terminal (`MACPIT_SHELL -lc "<comando>"`) — o ÚNICO lugar do sistema onde
- * um comando passa por shell (CLAUDE.md, regra 3). Guarda buffer para replay, grava log em disco,
+ * um comando passa por shell (AGENTS.md, regra 3). Guarda buffer para replay, grava log em disco,
  * permite input/resize e para com SIGTERM → SIGKILL no grupo de processos.
  */
 export class RunManager {

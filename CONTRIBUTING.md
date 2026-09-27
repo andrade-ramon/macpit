@@ -23,7 +23,7 @@ O CI roda os mesmos passos num runner macOS.
 ## Leia antes de mexer
 
 - [docs/02-arquitetura.md](docs/02-arquitetura.md), [docs/05-seguranca.md](docs/05-seguranca.md) e a página da funcionalidade em `docs/features/`.
-- [CLAUDE.md](CLAUDE.md): regras do projeto e blocos prontos para reutilizar. Vale para pessoas e para agentes de IA.
+- [AGENTS.md](AGENTS.md): regras do projeto e blocos prontos para reutilizar. Vale para pessoas e para agentes de IA.
 
 Regras que um PR não pode quebrar:
 

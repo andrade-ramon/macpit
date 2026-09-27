@@ -14,6 +14,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ### Added
 
+- **Agentes de IA (Claude Code e Codex):** regras num só `AGENTS.md` (o `CLAUDE.md` importa); roteiros compartilhados em `docs/agents/` (implementar funcionalidade, atualizar docs, revisão de segurança); comandos `/implement-feature`, `/update-docs`, `/security-review` no Claude Code; `scripts/install-codex-prompts.sh` instala os mesmos roteiros como prompts do Codex.
 - **Open-source:** licença MIT, `SECURITY.md`, `CONTRIBUTING.md`, modelos de issue/PR e CI no GitHub Actions (macOS: typecheck, lint, format, testes, build e E2E). Dados de exemplo do design sem nomes internos; capturas de tela no README.
 - **Ações:** parâmetro repositório sem padrão abre, ao executar, um popup com a lista dos repositórios (busca, setas, ↵); escolher executa. Vale para cards, Visão geral, paleta ⌘K e "Executar de novo" (`features/actions/RunLauncher.tsx`).
 - **Redesign "Cockpit"** (design do Claude Design em `docs/design/`):

@@ -31,7 +31,7 @@ export class ExecError extends Error {
 
 /**
  * Executa um binário SEM shell, com argumentos em array. Usado por todos os coletores.
- * Nunca interpole input do usuário em string de shell — ver CLAUDE.md, regra 3.
+ * Nunca interpole input do usuário em string de shell — ver AGENTS.md, regra 3.
  */
 export function run(file: string, args: readonly string[] = [], opts: ExecOptions = {}): Promise<ExecResult> {
   const { timeoutMs = 10_000, maxBuffer = 32 * 1024 * 1024, cwd, env, okExitCodes = [0] } = opts;
