@@ -165,13 +165,11 @@ describe('painel de projeto', () => {
       bindings: [{ address: '127.0.0.1', family: 'IPv4' as const }],
       scope: 'local' as const,
     };
-    const spy = vi
-      .spyOn(ports, 'list')
-      .mockResolvedValue({
-        ts: Date.now(),
-        entries: [listener, { ...listener, pid: 999999, port: 3457 }],
-        limited: true,
-      });
+    const spy = vi.spyOn(ports, 'list').mockResolvedValue({
+      ts: Date.now(),
+      entries: [listener, { ...listener, pid: 999999, port: 3457 }],
+      limited: true,
+    });
     expect((await get(one.id)).json().ports).toEqual([listener]);
     spy.mockRejectedValue(new Error('lsof indisponível'));
     expect((await get(one.id)).json()).toMatchObject({
