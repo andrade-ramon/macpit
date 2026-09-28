@@ -1,5 +1,7 @@
 # Documentação
 
+- [Criar ações com IA](features/ia.md): plano e implementação de criação assistida, configuração de provedor e proteção de credenciais.
+
 - [Painel por projeto](features/projetos.md): ações, serviços, portas e execuções por repositório.
 - [Painéis salvos](features/paineis.md): salvar, listar e abrir painéis de projetos pela aba Painéis.
 - [Reiniciar macpit](features/reinicio.md): botão nas Configurações, confirmação e reconexão automática.

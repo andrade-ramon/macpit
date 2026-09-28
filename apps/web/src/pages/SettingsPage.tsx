@@ -7,6 +7,7 @@ import { Workspace } from '../components/layout/Workspace';
 import { Segmented, Switch } from '../components/ui/Switch';
 import { InstallCard } from '../features/pwa/InstallCard';
 import { RestartCard } from '../features/settings/RestartCard';
+import { AiSettings } from '../features/ai/AiSettings';
 import { SHORTCUT_HELP } from '../features/shortcuts/shortcuts';
 import { useHealth } from '../hooks/useHealth';
 import { api } from '../lib/api';
@@ -15,6 +16,7 @@ import { PALETTES, setDensity, setPalette, useAppearance, type Density } from '.
 const KEY = ['settings', 'notifications'];
 const SECTIONS = [
   { id: 'settings-server', label: 'Servidor do macpit' },
+  { id: 'settings-ai', label: 'IA para criar ações' },
   { id: 'settings-notifications', label: 'Notificações' },
   { id: 'settings-appearance', label: 'Aparência' },
   { id: 'settings-install', label: 'Instalar como app' },
@@ -116,6 +118,7 @@ export function SettingsPage() {
       <h1 className="m-0 text-[22px] font-semibold tracking-[-0.01em]">Configurações</h1>
 
       <RestartCard />
+      <AiSettings />
 
       <Section id="settings-notifications">
         <div className="flex items-center justify-between gap-3">

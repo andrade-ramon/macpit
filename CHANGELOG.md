@@ -18,6 +18,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ### Added
 
+- **Criar ações com IA:** configuração de Gemini/Anthropic e API key em memória ou arquivo 0600; geração com esclarecimentos/refinamento, validação de templates e revisão no editor existente. Criar não executa, automações ficam desligadas e credenciais não vão para o ambiente dos comandos. Inclui limites, cancelamento, auditoria sem conteúdo, testes de segurança/API e E2E com respostas simuladas.
+
 - **Reiniciar macpit:** botão nas Configurações com confirmação e contagem de execuções ativas, fechamento ordenado, recarga do processo pelo mesmo Node e reconexão automática por `instanceId`. Preserva dados e sessão; não reinicia o macOS. Rotas `/api/server` e `/api/server/restart`, auditoria e E2E de reinício real do servidor de teste.
 
 - **Painéis salvos:** botão Salvar painel nos projetos e aba Painéis com busca, abertura da visão ao vivo, URL persistente, indicação de repositório indisponível e remoção confirmada. Persistência em `settings.panels.saved`, rotas `/api/panels`, atalho `g b`, entrada na paleta e testes de API/E2E; salvar ou abrir não inicia ações.
