@@ -12,6 +12,7 @@ import { Modal } from '../../components/ui/Modal';
 import { api } from '../../lib/api';
 import { ActionEditor } from '../actions/ActionEditor';
 import { AiDraftReview } from './AiDraftReview';
+import { AiQuestionWizard } from './AiQuestionWizard';
 import { useAiSettings } from './useAi';
 
 export function CreateActionWithAi({
@@ -39,10 +40,10 @@ export function CreateActionWithAi({
     setBusy(false);
     setError('Solicitação cancelada. A cobrança já iniciada no provedor pode permanecer.');
   };
-  async function generate() {
+  async function generate(submittedPrompt = prompt) {
     if (controller.current) return;
     const parsed = AiDraftRequestSchema.safeParse({
-      prompt,
+      prompt: submittedPrompt,
       history,
       configuration: settings.data ? { provider: settings.data.provider, model: settings.data.model } : undefined,
     });
@@ -135,61 +136,87 @@ export function CreateActionWithAi({
                 </ol>
               </details>
             )}
-            {result && <AiDraftReview result={result} />}
-            <form
-              className="flex flex-col gap-3"
-              onSubmit={(e) => {
-                e.preventDefault();
-                void generate();
-              }}
-            >
-              <label className="flex flex-col gap-1 text-sm">
-                {result ? 'Responda ou peça um ajuste' : 'O que você quer fazer?'}
-                <textarea
-                  autoFocus
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  disabled={busy}
-                  maxLength={8000}
-                  rows={4}
-                  className="input w-full resize-y"
-                  placeholder="Quero um túnel SSH para acessar meu banco pela porta local 5433…"
+            {result && <AiDraftReview result={result} hideQuestions={result.status === 'needs_input'} />}
+            {result?.status === 'needs_input' ? (
+              <>
+                <AiQuestionWizard
+                  key={history.length}
+                  questions={result.questions}
+                  busy={busy}
+                  limitReached={history.length > 6}
+                  onSubmit={(answers) => void generate(answers)}
+                  onCancel={cancel}
                 />
-              </label>
-              <div className="flex flex-wrap gap-2">
                 <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={busy || !prompt.trim() || history.length > 6}
+                  type="button"
+                  className="btn btn-ghost self-start"
+                  disabled={busy}
+                  onClick={() => {
+                    setHistory([]);
+                    setResult(undefined);
+                    setPrompt('');
+                    setError(undefined);
+                  }}
                 >
-                  {busy ? 'Gerando…' : result ? 'Enviar ajuste' : 'Gerar rascunho'}
+                  Novo pedido
                 </button>
-                {busy && (
-                  <button type="button" className="btn" onClick={cancel}>
-                    Cancelar geração
-                  </button>
-                )}
-                {result?.action && (
-                  <button type="button" className="btn" disabled={busy} onClick={() => setReview(true)}>
-                    Revisar e criar ação
-                  </button>
-                )}
-                {history.length > 0 && (
-                  <button
-                    type="button"
-                    className="btn btn-ghost"
+              </>
+            ) : (
+              <form
+                className="flex flex-col gap-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void generate();
+                }}
+              >
+                <label className="flex flex-col gap-1 text-sm">
+                  {result ? 'Responda ou peça um ajuste' : 'O que você quer fazer?'}
+                  <textarea
+                    autoFocus
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
                     disabled={busy}
-                    onClick={() => {
-                      setHistory([]);
-                      setResult(undefined);
-                      setError(undefined);
-                    }}
+                    maxLength={8000}
+                    rows={4}
+                    className="input w-full resize-y"
+                    placeholder="Quero um túnel SSH para acessar meu banco pela porta local 5433…"
+                  />
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={busy || !prompt.trim() || history.length > 6}
                   >
-                    Novo pedido
+                    {busy ? 'Gerando…' : result ? 'Enviar ajuste' : 'Gerar rascunho'}
                   </button>
-                )}
-              </div>
-            </form>
+                  {busy && (
+                    <button type="button" className="btn" onClick={cancel}>
+                      Cancelar geração
+                    </button>
+                  )}
+                  {result?.action && (
+                    <button type="button" className="btn" disabled={busy} onClick={() => setReview(true)}>
+                      Revisar e criar ação
+                    </button>
+                  )}
+                  {history.length > 0 && (
+                    <button
+                      type="button"
+                      className="btn btn-ghost"
+                      disabled={busy}
+                      onClick={() => {
+                        setHistory([]);
+                        setResult(undefined);
+                        setError(undefined);
+                      }}
+                    >
+                      Novo pedido
+                    </button>
+                  )}
+                </div>
+              </form>
+            )}
             {busy && (
               <p role="status" className="m-0 text-xs text-text2">
                 Aguardando o provedor, por até 45 segundos. Nenhum comando está sendo executado.
