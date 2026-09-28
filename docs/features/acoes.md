@@ -2,6 +2,8 @@
 
 Status: **implementado**. Comandos salvos que você executa com um clique e acompanha num terminal ao vivo, por exemplo o túnel SSH com o banco de um projeto.
 
+Execuções com parâmetro de repositório guardam o projeto escolhido em `Run.repoPath` e aparecem no [painel por projeto](projetos.md), junto das portas de suas execuções ativas. O terminal e o log continuam no rodapé compartilhado.
+
 ## Modelo
 
 Uma ação tem:

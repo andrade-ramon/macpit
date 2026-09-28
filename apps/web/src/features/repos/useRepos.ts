@@ -1,9 +1,18 @@
-import type { Repo, RepoList, RepoSettings, RepoVarsInput } from '@macpit/shared';
+import type { ProjectOverview, Repo, RepoList, RepoSettings, RepoVarsInput } from '@macpit/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 
 const LIST = ['repos'];
 const SETTINGS = ['settings', 'repos'];
+
+export function useProject(id: string) {
+  return useQuery({
+    queryKey: ['projects', id],
+    queryFn: () => api<ProjectOverview>(`/api/repos/${encodeURIComponent(id)}/project`),
+    refetchInterval: 3_000,
+    retry: false,
+  });
+}
 
 export function useRepos() {
   return useQuery({ queryKey: LIST, queryFn: () => api<RepoList>('/api/repos'), staleTime: 30_000 });

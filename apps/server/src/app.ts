@@ -24,6 +24,9 @@ import { portRoutes } from './modules/ports/routes.js';
 import { PortService, type PortDeps } from './modules/ports/service.js';
 import { processRoutes } from './modules/processes/routes.js';
 import { repoRoutes } from './modules/repos/routes.js';
+import { panelRoutes } from './modules/panels/routes.js';
+import { PanelService } from './modules/panels/service.js';
+import { lifecycleRoutes, type RestartDeps } from './modules/lifecycle/routes.js';
 import { RepoService } from './modules/repos/service.js';
 import { ProcessService, type ProcessDeps } from './modules/processes/service.js';
 import { defaultKillGroup, groupAlive, loadPtySpawn, RunManager, type RunDeps } from './modules/runs/manager.js';
@@ -36,6 +39,8 @@ import { polled, WsHub } from './ws/hub.js';
 import { wsRoutes } from './ws/routes.js';
 
 export interface BuildOptions {
+  /** Só o entrypoint real fornece o reinício; testes injetam um espião. */
+  restart?: RestartDeps;
   logger?: FastifyServerOptions['logger'];
   /** Substitui os coletores do sistema (testes). */
   systemDeps?: SystemDeps;
@@ -178,7 +183,9 @@ export async function buildApp(config: Config, token: string, opts: BuildOptions
     ...(opts.shellImport ? { shellImport: opts.shellImport } : {}),
   });
   notifyRoutes(app, { notifier });
-  repoRoutes(app, { repos });
+  repoRoutes(app, { repos, actions, runs, manager, processes, ports });
+  panelRoutes(app, new PanelService(new SettingsStore(db), repos));
+  lifecycleRoutes(app, manager, audit, opts.restart);
   wsRoutes(app, hub);
   await registerStatic(app, config);
 

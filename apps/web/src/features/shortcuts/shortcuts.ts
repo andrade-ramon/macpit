@@ -9,6 +9,7 @@ export const GO_KEYS: Record<string, { to: string; label: string }> = {
   d: { to: '/disk', label: 'Disco' },
   a: { to: '/actions', label: 'Ações' },
   r: { to: '/repos', label: 'Repositórios' },
+  b: { to: '/panels', label: 'Painéis' },
   s: { to: '/settings', label: 'Configurações' },
 };
 

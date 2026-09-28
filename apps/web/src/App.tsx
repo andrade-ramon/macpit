@@ -15,6 +15,7 @@ import { UnauthorizedPage } from './pages/UnauthorizedPage';
 const DiskPage = lazy(() => import('./pages/DiskPage'));
 const ActionsPage = lazy(() => import('./pages/ActionsPage'));
 const ReposPage = lazy(() => import('./pages/ReposPage'));
+const PanelsPage = lazy(() => import('./pages/PanelsPage'));
 
 const Lazy = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<p className="p-6 text-text3">Carregando…</p>}>{children}</Suspense>
@@ -61,6 +62,14 @@ export function App() {
           }
         />
         <Route path="settings" element={<SettingsPage />} />
+        <Route
+          path="panels"
+          element={
+            <Lazy>
+              <PanelsPage />
+            </Lazy>
+          }
+        />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

@@ -29,6 +29,8 @@ ssh -N -L {{porta}}:db.interno:5432 {{bastion}}
 
 Uma ação marcada como **serviço** (`persistent`) é um processo de longa duração, como um túnel ou um servidor de dev.
 
+Cada ação persistente tem uma instância global. O [painel por projeto](projetos.md) mostra onde ela está ativa: tentar iniciar a mesma ação em outro projeto enquanto roda ou aguarda reinício retorna 409. Para trocar de projeto, pare o serviço primeiro. A parada pelo painel também confere o projeto esperado no servidor.
+
 | Estado       | Quando                                                                             |
 | ------------ | ---------------------------------------------------------------------------------- |
 | `stopped`    | não está rodando (mostra a última queda, ex.: `failed (código 255)`)               |

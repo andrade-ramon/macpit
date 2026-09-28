@@ -1,11 +1,12 @@
 import type { Action, Repo, RepoSettings } from '@macpit/shared';
 import { useMutation } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useLayout } from '../components/layout/LayoutContext';
 import { PageTitle, RailEmpty, Workspace } from '../components/layout/Workspace';
-import { applyRepoVars, initialParamValues, repoProvided } from '../features/actions/actionUtils';
-import { filledParams, useActions, useStartRun } from '../features/actions/useActions';
+import { useRunAction } from '../features/actions/RunLauncher';
+import { useActions } from '../features/actions/useActions';
+import { ProjectPanel } from '../features/repos/ProjectPanel';
 import { RepoVarsEditor } from '../features/repos/RepoVarsEditor';
 import {
   useRepos,
@@ -14,7 +15,6 @@ import {
   useSaveRepoSettings,
   useScanRepos,
 } from '../features/repos/useRepos';
-import { useDock } from '../features/terminal/DockContext';
 import { api } from '../lib/api';
 
 const COLS = '28px minmax(160px,1fr) minmax(180px,1fr) 160px minmax(240px,1.4fr) 140px';
@@ -106,13 +106,14 @@ function RootsEditor({ data }: { data: RepoSettings }) {
 
 export function ReposPage() {
   const navigate = useNavigate();
-  const dock = useDock();
+  const launch = useRunAction();
+  const [search] = useSearchParams();
+  const projectId = search.get('project');
   const { showRail } = useLayout();
   const { data, error, isPending } = useRepos();
   const { data: actions } = useActions();
   const scan = useScanRepos();
   const select = useSaveRepoSelection();
-  const start = useStartRun();
   const [q, setQ] = useState('');
   const [onlyGithub, setOnlyGithub] = useState(true);
   const [show, setShow] = useState<'all' | 'imported' | 'not'>('all');
@@ -130,7 +131,10 @@ export function ReposPage() {
   }, [all, q, onlyGithub, show]);
   const importedPaths = all.filter((r) => r.imported).map((r) => r.path);
   const githubCount = all.filter((r) => r.github).length;
-  const sel = all.find((r) => r.id === selectedId);
+  const projectRepos = all.filter((r) =>
+    `${r.name} ${r.github ?? ''} ${r.path}`.toLowerCase().includes(q.trim().toLowerCase()),
+  );
+  const sel = all.find((r) => r.id === (projectId ?? selectedId));
 
   const setImported = (paths: string[], on: boolean) => {
     const set = new Set(importedPaths);
@@ -211,21 +215,13 @@ export function ReposPage() {
       key={sel.id}
       repo={sel}
       actions={(actions ?? []).filter((a) => a.params.some((p) => p.type === 'repo'))}
-      onClose={() => setSelectedId(undefined)}
-      onRunHere={(a) => {
-        const repoParam = a.params.find((p) => p.type === 'repo')!;
-        const values = applyRepoVars(a.params, { ...initialParamValues(a.params), [repoParam.name]: sel.id }, sel);
-        const provided = repoProvided(a.params, sel);
-        const missing = a.params.some(
-          (p) => p.type !== 'repo' && !values[p.name] && p.default === undefined && !provided.has(p.name.toLowerCase()),
-        );
-        if (missing) return navigate(`/actions?sel=${a.id}&repo=${sel.id}`);
-        start.mutate(
-          { actionId: a.id, params: filledParams({ ...values, [repoParam.name]: sel.id }) },
-          { onSuccess: (r) => dock.openRun(r.id) },
-        );
+      onClose={() => {
+        setSelectedId(undefined);
+        if (projectId) navigate('/repos');
       }}
-      runError={start.error?.message}
+      onRunHere={(a) => launch(a, sel)}
+      panelOpen={Boolean(projectId)}
+      onOpenPanel={() => navigate(`/repos?project=${sel.id}`)}
     />
   ) : (
     <RailEmpty>
@@ -235,41 +231,93 @@ export function ReposPage() {
     </RailEmpty>
   );
 
+  const projectLeft = (
+    <>
+      <div className="eyebrow">Seus projetos</div>
+      <input
+        className="input"
+        type="search"
+        aria-label="Filtrar projetos"
+        placeholder="Nome ou pasta do projeto"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+      />
+      <nav aria-label="Projetos" className="flex flex-col gap-2">
+        {projectRepos.map((r) => (
+          <button
+            key={r.id}
+            className={`tile w-full p-3 text-left ${r.id === projectId ? 'border-accent bg-accent-soft' : ''}`}
+            aria-current={r.id === projectId ? 'page' : undefined}
+            onClick={() => navigate(`/repos?project=${r.id}`)}
+          >
+            <span className="block truncate font-semibold">{r.github ?? r.name}</span>
+            <span className="block truncate text-xs text-text3">
+              {r.branch ?? 'sem branch'}
+              {r.imported ? '' : ' · não importado'}
+            </span>
+          </button>
+        ))}
+        {projectRepos.length === 0 && (
+          <p className="text-sm text-text3">
+            {all.length ? 'Nenhum projeto com esse filtro.' : 'Nenhum projeto encontrado.'}
+          </p>
+        )}
+      </nav>
+      <button className="btn btn-md" onClick={() => navigate('/repos')}>
+        Configurar repositórios
+      </button>
+      <p className="text-xs text-text3">
+        As ações disponíveis têm um parâmetro do tipo repositório. Execuções antigas sem vínculo não entram no histórico
+        do projeto.
+      </p>
+    </>
+  );
+
   return (
-    <Workspace label="Repositórios" left={left} right={right} mainClassName="flex flex-col overflow-hidden">
+    <Workspace
+      label="Repositórios"
+      left={projectId ? projectLeft : left}
+      right={right}
+      mainClassName="flex flex-col overflow-hidden"
+    >
       <div className="px-6 pb-3 pt-[18px]">
-        <PageTitle title="Repositórios" sub={data ? `${all.length} encontrados · ${githubCount} no GitHub` : undefined}>
-          <div className="ml-auto flex min-w-0 items-center gap-2">
-            <label className="relative min-w-0 shrink">
-              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-text3">⌕</span>
-              <input
-                type="search"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Nome, owner/repo ou pasta"
-                aria-label="Buscar repositórios"
-                className="h-[38px] w-[300px] min-w-[140px] max-w-full rounded-[10px] border border-line2 bg-panel pl-[34px] pr-3"
-              />
-            </label>
-            <button
-              onClick={() => setOnlyGithub(!onlyGithub)}
-              aria-pressed={onlyGithub}
-              className="h-[38px] shrink-0 whitespace-nowrap rounded-[10px] border px-3 text-[13px] font-medium"
-              style={{
-                borderColor: onlyGithub ? 'var(--accent)' : 'var(--line2)',
-                background: onlyGithub ? 'var(--accent-soft)' : 'var(--panel2)',
-              }}
-            >
-              Só GitHub
-            </button>
-            <button
-              onClick={() => scan.mutate()}
-              disabled={scan.isPending}
-              className="btn h-[38px] shrink-0 rounded-[10px]"
-            >
-              {scan.isPending ? 'Procurando…' : '↻ Procurar de novo'}
-            </button>
-          </div>
+        <PageTitle
+          title={projectId ? 'Painel do projeto' : 'Repositórios'}
+          sub={!projectId && data ? `${all.length} encontrados · ${githubCount} no GitHub` : undefined}
+        >
+          {!projectId && (
+            <div className="ml-auto flex min-w-0 items-center gap-2">
+              <label className="relative min-w-0 shrink">
+                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-text3">⌕</span>
+                <input
+                  type="search"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Nome, owner/repo ou pasta"
+                  aria-label="Buscar repositórios"
+                  className="h-[38px] w-[300px] min-w-[140px] max-w-full rounded-[10px] border border-line2 bg-panel pl-[34px] pr-3"
+                />
+              </label>
+              <button
+                onClick={() => setOnlyGithub(!onlyGithub)}
+                aria-pressed={onlyGithub}
+                className="h-[38px] shrink-0 whitespace-nowrap rounded-[10px] border px-3 text-[13px] font-medium"
+                style={{
+                  borderColor: onlyGithub ? 'var(--accent)' : 'var(--line2)',
+                  background: onlyGithub ? 'var(--accent-soft)' : 'var(--panel2)',
+                }}
+              >
+                Só GitHub
+              </button>
+              <button
+                onClick={() => scan.mutate()}
+                disabled={scan.isPending}
+                className="btn h-[38px] shrink-0 rounded-[10px]"
+              >
+                {scan.isPending ? 'Procurando…' : '↻ Procurar de novo'}
+              </button>
+            </div>
+          )}
         </PageTitle>
       </div>
       {error && <p className="mx-6 text-danger">{error.message}</p>}
@@ -279,7 +327,8 @@ export function ReposPage() {
         </p>
       ))}
       {isPending && <p className="mx-6 text-text3">Procurando repositórios…</p>}
-      {data && (
+      {projectId && <ProjectPanel key={projectId} id={projectId} />}
+      {data && !projectId && (
         <div className="mx-6 mb-5 min-h-0 flex-1 overflow-auto rounded-[14px] border border-line bg-panel">
           <div className="min-w-[1000px]">
             <div className="table-head grid items-center gap-3" style={{ gridTemplateColumns: COLS }}>
@@ -314,7 +363,16 @@ export function ReposPage() {
                   title="Importar: aparece nas ações e na paleta"
                   className="h-4 w-4 accent-[var(--accent)]"
                 />
-                <span className="truncate font-semibold">{r.name}</span>
+                <button
+                  className="truncate border-0 bg-transparent p-0 text-left font-semibold text-accent"
+                  aria-label={`Abrir projeto ${r.name}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/repos?project=${r.id}`);
+                  }}
+                >
+                  {r.name}
+                </button>
                 <span className="truncate text-[13px]" style={{ color: r.github ? 'var(--info)' : 'var(--text3)' }}>
                   {r.github ?? (r.remote ? 'outro remote' : 'sem remote')}
                 </span>
@@ -347,13 +405,15 @@ function RepoDetail({
   actions,
   onClose,
   onRunHere,
-  runError,
+  panelOpen,
+  onOpenPanel,
 }: {
   repo: Repo;
   actions: Action[];
   onClose: () => void;
   onRunHere: (a: Action) => void;
-  runError?: string;
+  panelOpen: boolean;
+  onOpenPanel: () => void;
 }) {
   const open = useMutation({ mutationFn: () => api<{ ok: true }>(`/api/repos/${repo.id}/open`, { method: 'POST' }) });
   return (
@@ -396,34 +456,40 @@ function RepoDetail({
         </button>
       </div>
       {open.error && <p className="m-0 text-xs text-danger">{open.error.message}</p>}
+      {!panelOpen && (
+        <button className="btn btn-lg btn-primary" onClick={onOpenPanel}>
+          Abrir painel do projeto →
+        </button>
+      )}
       {!repo.imported && (
         <p className="m-0 text-[12.5px] text-warn">
           Não importado: não aparece para escolha nas ações. Marque a caixa na lista para importar.
         </p>
       )}
       <RepoVarsEditor repo={repo} />
-      <div>
-        <div className="eyebrow mb-1.5">Ações que usam este repo</div>
-        <div className="flex flex-col gap-1.5">
-          {actions.map((a) => (
-            <div key={a.id} className="tile flex items-center gap-2.5 rounded-[10px] px-3 py-2.5">
-              <span>{a.icon || '▶'}</span>
-              <span className="flex-1 truncate font-medium">{a.name}</span>
-              <button
-                onClick={() => onRunHere(a)}
-                disabled={!repo.imported}
-                className="btn btn-primary h-[34px] rounded-[9px]"
-              >
-                ▶ Executar aqui
-              </button>
-            </div>
-          ))}
-          {actions.length === 0 && (
-            <p className="m-0 text-[13px] text-text3">Nenhuma ação com parâmetro do tipo repositório ainda.</p>
-          )}
-          {runError && <p className="m-0 text-xs text-danger">{runError}</p>}
+      {!panelOpen && (
+        <div>
+          <div className="eyebrow mb-1.5">Ações que usam este repo</div>
+          <div className="flex flex-col gap-1.5">
+            {actions.map((a) => (
+              <div key={a.id} className="tile flex items-center gap-2.5 rounded-[10px] px-3 py-2.5">
+                <span>{a.icon || '▶'}</span>
+                <span className="flex-1 truncate font-medium">{a.name}</span>
+                <button
+                  onClick={() => onRunHere(a)}
+                  disabled={!repo.imported}
+                  className="btn btn-primary h-[34px] rounded-[9px]"
+                >
+                  ▶ Executar aqui
+                </button>
+              </div>
+            ))}
+            {actions.length === 0 && (
+              <p className="m-0 text-[13px] text-text3">Nenhuma ação com parâmetro do tipo repositório ainda.</p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
