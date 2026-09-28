@@ -100,8 +100,9 @@ test('IA: falha, esclarece, gera, refina e cria somente após revisão', async (
   await expect(dialog.getByLabel('O que você quer fazer?')).toHaveValue('Quero mostrar um texto');
   await dialog.getByRole('button', { name: 'Gerar rascunho' }).click();
   await expect(dialog).toContainText('Deseja informar o texto ao executar?');
-  await dialog.getByLabel('Responda ou peça um ajuste').fill('Sim, como parâmetro');
-  await dialog.getByRole('button', { name: 'Enviar ajuste' }).click();
+  await dialog.getByLabel('Deseja informar o texto ao executar?').fill('Sim, como parâmetro');
+  await dialog.getByRole('button', { name: 'Revisar respostas', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Enviar respostas à IA' }).click();
   await expect(dialog.getByRole('heading', { name: draft.action!.name, exact: true })).toBeVisible();
   await dialog.getByLabel('Responda ou peça um ajuste').fill('Renomeie para texto revisado');
   await dialog.getByRole('button', { name: 'Enviar ajuste' }).click();
@@ -124,6 +125,78 @@ test('IA: falha, esclarece, gera, refina e cria somente após revisão', async (
   expect(created).toHaveLength(1);
   expect(created[0]).toMatchObject({ name: 'IA E2E editado localmente', autoStart: false, autoRestart: false });
   expect(await (await request.get('/api/runs', { headers: auth })).json()).toEqual(runsBefore);
+});
+
+test('IA: perguntas em etapas preservam respostas, revisão e repetição após falha', async ({ page, request }) => {
+  await request.put('/api/ai/credential', {
+    headers: auth,
+    data: { provider: 'gemini', apiKey: key, storage: 'session' },
+  });
+  const questions = [
+    'O script requer argumentos?',
+    'É uma tarefa pontual ou um serviço?',
+    'Qual diretório deve ser usado?',
+  ];
+  const calls: Array<{ prompt: string }> = [];
+  await page.route('**/api/ai/drafts', async (route) => {
+    calls.push(route.request().postDataJSON());
+    if (calls.length === 2) return route.fulfill({ status: 502, json: { error: 'Falha temporária, tente novamente' } });
+    return route.fulfill({
+      json: {
+        result: {
+          ...draft,
+          status: 'needs_input',
+          action: null,
+          questions: calls.length === 1 ? questions : [questions[0]],
+        },
+      },
+    });
+  });
+  await login(page);
+  await page.goto('/actions');
+  await page.getByRole('button', { name: 'Criar com IA', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Criar ação com IA' });
+  await dialog.getByLabel('O que você quer fazer?').fill('Quero executar meu script');
+  await dialog.getByRole('button', { name: 'Gerar rascunho' }).click();
+  await expect(dialog).toContainText('Pergunta 1 de 3');
+  await expect(dialog.getByLabel(questions[0]!)).toBeFocused();
+  await expect(dialog.getByRole('button', { name: 'Próxima', exact: true })).toBeDisabled();
+  await dialog.getByLabel(questions[0]!).fill('   ');
+  await expect(dialog.getByRole('button', { name: 'Próxima', exact: true })).toBeDisabled();
+  await dialog.getByLabel(questions[0]!).fill('Não');
+  await dialog.getByRole('button', { name: 'Próxima', exact: true }).click();
+  await dialog.getByLabel(questions[1]!).fill('Um serviço\nDeve continuar rodando');
+  await dialog.getByRole('button', { name: 'Voltar', exact: true }).click();
+  await expect(dialog.getByLabel(questions[0]!)).toHaveValue('Não');
+  await dialog.getByRole('button', { name: 'Próxima', exact: true }).click();
+  await expect(dialog.getByLabel(questions[1]!)).toHaveValue('Um serviço\nDeve continuar rodando');
+  await dialog.getByRole('button', { name: 'Próxima', exact: true }).click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await dialog.getByLabel(questions[2]!).fill('Vou escolher o repositório no editor');
+  expect(await dialog.evaluate((d) => d.scrollWidth <= d.clientWidth)).toBe(true);
+  await page.screenshot({ path: 'test-results/ia-perguntas-mobile.png' });
+  await dialog.getByRole('button', { name: 'Revisar respostas', exact: true }).click();
+  expect(calls).toHaveLength(1);
+  await expect(dialog.getByRole('heading', { name: 'Tudo certo para enviar?' })).toBeFocused();
+  await dialog.getByRole('button', { name: 'Editar resposta 1' }).click();
+  await dialog.getByLabel(questions[0]!).fill('Sim, --verbose');
+  await dialog.getByRole('button', { name: 'Ir para pergunta 3' }).click();
+  await dialog.getByRole('button', { name: 'Revisar respostas', exact: true }).click();
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await page.screenshot({ path: 'test-results/ia-perguntas-revisao.png' });
+  await dialog.getByRole('button', { name: 'Enviar respostas à IA' }).click();
+  await expect(dialog.getByRole('alert')).toContainText('Falha temporária');
+  await expect(dialog).toContainText('Sim, --verbose');
+  await expect(dialog).toContainText('Vou escolher o repositório no editor');
+  await dialog.getByRole('button', { name: 'Enviar respostas à IA' }).click();
+  await expect(dialog).toContainText('Pergunta 1 de 1');
+  await expect(dialog.getByLabel(questions[0]!)).toHaveValue('');
+  expect(calls[1]!.prompt).toBe(calls[2]!.prompt);
+  for (const question of questions) expect(calls[1]!.prompt).toContain(question);
+  expect(calls[1]!.prompt).toContain('Sim, --verbose');
+  expect(calls[1]!.prompt).toContain('Um serviço\nDeve continuar rodando');
+  await dialog.getByRole('button', { name: 'Novo pedido', exact: true }).click();
+  await expect(dialog.getByLabel('O que você quer fazer?')).toHaveValue('');
 });
 
 test('IA: cancelamento ignora resposta antiga e mantém a sugestão nova', async ({ page, request }) => {

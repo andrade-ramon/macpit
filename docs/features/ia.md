@@ -8,6 +8,16 @@ O usuário configura provedor, modelo e API key em **Configurações → IA**, a
 
 ## Escopo aprovado
 
+### Perguntas em etapas
+
+Quando a IA retorna `needs_input`, cada pergunta tem seu próprio campo de resposta. O assistente mostra “Pergunta N de M”, etapas numeradas e botões **Voltar**/**Próxima**, preservando o texto ao navegar. Resposta vazia não permite avançar; a pessoa pode responder “não sei” quando faltar uma informação.
+
+Depois da última pergunta, **Revisar respostas** exibe o conjunto, com **Editar** em cada resposta. Somente **Enviar respostas à IA** faz a chamada externa, reunindo perguntas e respostas no `prompt` existente. Navegar pelas etapas não consome chamadas. O limite total continua em 8 mil caracteres, contando perguntas e respostas, e a UI impede envio acima dele.
+
+Falha ou cancelamento preserva as respostas para corrigir/repetir. Uma nova rodada de perguntas começa com campos novos, mesmo se repetir a pergunta anterior. **Novo pedido** limpa a conversa e as respostas. Tudo fica apenas em memória, sem alterações no contrato HTTP ou na persistência. Refinar um rascunho pronto continua usando o campo livre.
+
+### Funcionalidades
+
 - Uma ação por pedido; Gemini e Anthropic, com um provedor ativo por vez e adaptadores independentes.
 - Respostas estruturadas: `needs_input`, `draft` ou `unsupported`.
 - Nome, comando parametrizado, grupo, ícone e serviço/porta esperada; informações ausentes viram perguntas ou parâmetros, nunca hosts/caminhos inventados.

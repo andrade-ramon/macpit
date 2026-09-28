@@ -1,6 +1,6 @@
 import type { AiResult } from '@macpit/shared';
 
-export function AiDraftReview({ result }: { result: AiResult }) {
+export function AiDraftReview({ result, hideQuestions = false }: { result: AiResult; hideQuestions?: boolean }) {
   return (
     <div className="flex flex-col gap-3 text-sm">
       <p className="m-0 whitespace-pre-wrap text-text2">{result.explanation}</p>
@@ -30,7 +30,7 @@ export function AiDraftReview({ result }: { result: AiResult }) {
           )}
         </>
       )}
-      {result.questions.length > 0 && (
+      {!hideQuestions && result.questions.length > 0 && (
         <div>
           <h3 className="m-0 mb-1 font-semibold">Para continuar</h3>
           <ul className="m-0 pl-5">

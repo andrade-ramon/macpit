@@ -88,6 +88,8 @@ Cada fase é entregável e testável sozinha. Marque `[x]` ao concluir (no mesmo
 
 ## Próximos passos (ideias, fora do plano original)
 
+- [x] Perguntas da IA em assistente por etapas, com campo por pergunta, navegação, revisão e envio conjunto das respostas.
+
 - [x] Criar ações com IA: configuração Gemini/Anthropic, credenciais, rascunhos validados, revisão no editor e testes. Plano e limites de validação em [features/ia.md](features/ia.md); chamada com chave real ainda não verificada.
 
 - [x] Reiniciar apenas o macpit pelas Configurações, com confirmação, fechamento ordenado e reconexão automática.
