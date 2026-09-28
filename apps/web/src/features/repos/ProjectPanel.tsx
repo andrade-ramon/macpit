@@ -79,15 +79,18 @@ export function ProjectPanel({ id, fromPanels = false }: { id: string; fromPanel
                     Nenhum item disponível. Crie uma ação com parâmetro do tipo repositório.
                   </p>
                 )}
-                <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,240px),1fr))] gap-3">
                   {entries.map(({ action: a, busyElsewhere }) => {
                     const badge = a.service ? serviceStyle(a.service) : a.lastRun ? runStyle(a.lastRun) : null;
                     const active = a.service && a.service.state !== 'stopped';
                     const canRun = a.params.some((p) => p.type === 'repo');
                     return (
-                      <article key={a.id} aria-label={a.name} className="tile flex flex-wrap items-center gap-2 p-3">
-                        <div className="min-w-0 flex-1 basis-40">
-                          <Link to={`/actions?sel=${a.id}&repo=${data.repo.id}`} className="font-semibold text-text">
+                      <article key={a.id} aria-label={a.name} className="tile flex min-w-0 flex-col gap-3 p-4">
+                        <div className="min-w-0 flex-1">
+                          <Link
+                            to={`/actions?sel=${a.id}&repo=${data.repo.id}`}
+                            className="break-words font-semibold text-text"
+                          >
                             {a.icon || '▶'} {a.name}
                           </Link>
                           <div className="mt-1 text-xs text-text3">
@@ -103,30 +106,32 @@ export function ProjectPanel({ id, fromPanels = false }: { id: string; fromPanel
                             <p className="text-xs text-warn">A ação deixou de ter parâmetro de repositório.</p>
                           )}
                         </div>
-                        {active ? (
-                          <>
-                            {a.service?.runId && (
-                              <button className="btn btn-sm" onClick={() => dock.openRun(a.service!.runId!)}>
-                                Terminal
+                        <div className="mt-auto flex flex-wrap gap-2">
+                          {active ? (
+                            <>
+                              {a.service?.runId && (
+                                <button className="btn btn-sm" onClick={() => dock.openRun(a.service!.runId!)}>
+                                  Terminal
+                                </button>
+                              )}
+                              <button
+                                className="btn btn-sm btn-danger-outline"
+                                disabled={stop.isPending || Boolean(error)}
+                                onClick={() => stop.mutate({ actionId: a.id, repoPath: data.repo.path })}
+                              >
+                                Parar serviço
                               </button>
-                            )}
+                            </>
+                          ) : (
                             <button
-                              className="btn btn-sm btn-danger-outline"
-                              disabled={stop.isPending || Boolean(error)}
-                              onClick={() => stop.mutate({ actionId: a.id, repoPath: data.repo.path })}
+                              className="btn btn-sm btn-primary"
+                              disabled={busyElsewhere || !data.repo.imported || !canRun || Boolean(error)}
+                              onClick={() => launch(a, data.repo)}
                             >
-                              Parar serviço
+                              {a.persistent ? 'Iniciar aqui' : 'Executar aqui'}
                             </button>
-                          </>
-                        ) : (
-                          <button
-                            className="btn btn-sm btn-primary"
-                            disabled={busyElsewhere || !data.repo.imported || !canRun || Boolean(error)}
-                            onClick={() => launch(a, data.repo)}
-                          >
-                            {a.persistent ? 'Iniciar aqui' : 'Executar aqui'}
-                          </button>
-                        )}
+                          )}
+                        </div>
                       </article>
                     );
                   })}

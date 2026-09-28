@@ -6,6 +6,8 @@ Em **Repositórios**, clique no nome de um projeto ou em **Abrir painel do proje
 
 ## Conteúdo e execução
 
+Ações e serviços aparecem em cards numa grade responsiva, com estado e botões em cada bloco. A quantidade de colunas acompanha o espaço disponível; em telas estreitas os cards ocupam uma coluna.
+
 Use **Salvar painel** para guardar um acesso permanente ao projeto. A aba [Painéis](paineis.md) permite escolher os acessos salvos e abrir a mesma visão ao vivo, mantendo os dados no servidor entre sessões.
 
 - **Ações disponíveis:** ações com parâmetro `type: repo`, inclusive as que têm outro repositório padrão. **Executar aqui** escolhe explicitamente o projeto aberto e usa suas variáveis; se faltar um valor, abre o formulário de Ações com esse projeto selecionado. Ações que já rodaram no projeto continuam listadas enquanto houver histórico retido, mesmo após remover o parâmetro; nesse caso, executar pelo painel fica desabilitado.
