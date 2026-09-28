@@ -76,7 +76,17 @@ Outras decisões da fase 6:
 - **Sessão deslizante:** o cookie (HttpOnly, SameSite=Strict, 30 dias) é renovado em `GET /api/health` autenticado **por cookie**. Autenticação por Bearer não cria nem renova cookie.
 - **`POST /auth`:** o token colado vai no corpo, não na URL, no histórico nem em logs de acesso. Passa pelas mesmas checagens de Host, Origin e cross-site.
 
-## Implementação
+## Criação de ações com IA
+
+- `/api/ai/*` passa pelos hooks globais de sessão/Host/Origin e retorna `no-store`. Provedor/modelo esperado acompanha o pedido: uma configuração alterada em outra aba não redireciona o conteúdo silenciosamente.
+- Destinos HTTPS fixos (Google Gemini e Anthropic), chave só em header, redirecionamentos recusados, limite de resposta de 128 KiB e rascunho de 48 KiB. Sem URLs escolhidas pelo cliente, chamadas de ferramentas, navegação externa pelo modelo ou repetição automática. Erros externos não são devolvidos nem logados.
+- Chave em memória ou arquivo 0600 dentro de diretório 0700, com verificação de proprietário/tipo/permissões, rejeição de links, abertura sem seguir symlink e gravação atômica. Não vai para SQLite, localStorage, exportação ou `process.env`, portanto o módulo não a acrescenta ao ambiente dos ptys. Arquivo em texto não protege de root/processos maliciosos do mesmo usuário nem de backups.
+- Conteúdo enviado: pedido/histórico limitado e instruções de formato/plataforma/shell. Sem leitura automática de repositórios, arquivos, logs, processos ou variáveis. A UI identifica o destinatário. A própria chave ativa é recusada quando encontrada no pedido; isso **não** detecta todos os segredos que a pessoa possa digitar.
+- Saída do modelo é não confiável: JSON/zod estritos, validação cruzada de estado, ActionInputSchema e validateTemplate. Rascunhos não aceitam env/cwd/automações; parâmetros secretos não podem ter padrão, e projetos são escolhidos localmente. Início/reinício automáticos ficam desabilitados no editor de criação assistida.
+- O módulo não recebe RunManager, não salva ações e não executa comandos de validação. O POST de ações existente continua sendo a fronteira de salvamento após revisão; executar é outra interação. O prompt orienta comandos explícitos e evita reavaliação, mas essa orientação e os avisos **não certificam a segurança semântica de shell**. Uma ação manual continua permitindo comandos arbitrários, como antes.
+- Uma chamada por vez, dez por minuto incluindo testes, 45 s por chamada. Desconectar/fechar o diálogo aborta o trabalho quando possível; isso não garante estorno. Auditoria só de metadados; UI renderiza como texto, sem HTML injetado. Testes usam provedores/chaves sintéticos e dados temporários.
+
+## Arquivos de implementação
 
 - `apps/server/src/lib/security.ts` (hook `onRequest` global) e `lib/auth.ts`. Coberto por `test/security.test.ts` e `test/ws.test.ts`.
 - Clientes sem navegador (curl, scripts) usam `Authorization: Bearer $(cat ~/.macpit/token)`.

@@ -6,6 +6,8 @@ Execuções com parâmetro de repositório guardam o projeto escolhido em `Run.r
 
 ## Modelo
 
+O botão **Criar com IA** gera um rascunho por linguagem natural, permite esclarecer/refinar e abre este mesmo editor para revisão. É necessário configurar um provedor e API key. Gerar ou criar a ação não a executa; início/reinício automáticos ficam desligados durante a criação assistida. Veja [IA](ia.md).
+
 Uma ação tem:
 
 - nome, ícone (emoji) e grupo;

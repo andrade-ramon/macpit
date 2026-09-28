@@ -1,6 +1,6 @@
 import type { Db } from '../db/index.js';
 
-export type AuditKind = 'kill' | 'tail' | 'run' | 'stop' | 'repo_vars' | 'restart';
+export type AuditKind = 'kill' | 'tail' | 'run' | 'stop' | 'repo_vars' | 'restart' | 'ai';
 
 export type Audit = (kind: AuditKind, target: string, detail?: Record<string, unknown>) => void;
 
