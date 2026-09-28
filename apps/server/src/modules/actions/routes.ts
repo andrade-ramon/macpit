@@ -1,7 +1,13 @@
 import fs from 'node:fs';
 import type { FastifyInstance } from 'fastify';
 import type { ActionsExport, ActionsImportResult } from '@macpit/shared';
-import { ActionsImportSchema, IdParamSchema, RunListQuerySchema, RunStartSchema } from '@macpit/shared';
+import {
+  ActionsImportSchema,
+  IdParamSchema,
+  RunListQuerySchema,
+  RunStartSchema,
+  ServiceStopSchema,
+} from '@macpit/shared';
 import { HttpError, parseOr400 } from '../../lib/http.js';
 import type { RunManager } from '../runs/manager.js';
 import { publicRun, type RunStore } from '../runs/store.js';
@@ -92,6 +98,17 @@ export function actionRoutes(
   app.post('/api/actions/:id/stop', async (req) => {
     const action = actions.get(parseOr400(IdParamSchema, req.params).id);
     if (!action.persistent) throw new HttpError(400, 'a ação não é um serviço; pare a execução', 'not_service');
+    const { repoPath } = parseOr400(ServiceStopSchema, req.body ?? {});
+    if (repoPath !== undefined) {
+      const current = action.service?.runId ? runs.get(action.service.runId) : undefined;
+      if (current?.repoPath !== repoPath) {
+        throw new HttpError(
+          409,
+          'o serviço mudou de projeto; atualize o painel antes de parar',
+          'service_project_conflict',
+        );
+      }
+    }
     supervisor.stop(action.id);
     return actions.get(action.id);
   });

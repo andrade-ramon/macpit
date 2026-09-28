@@ -172,6 +172,10 @@ export class RunManager {
     return expanded;
   }
 
+  projectFor(action: Action, params: Record<string, string>): string | null {
+    return this.prepare(action, params).repo ?? null;
+  }
+
   start(action: Action, size: Pick<RunStart, 'cols' | 'rows'> & { params?: Record<string, string> }): Run {
     if (this.closed) throw new HttpError(503, 'servidor desligando', 'shutting_down');
     if (this.live.size >= this.opts.maxConcurrent) {
@@ -214,6 +218,7 @@ export class RunManager {
       command: action.command,
       cwd,
       pid: pty.pid,
+      repoPath: prepared.repo ?? null,
       status: 'running',
       exitCode: null,
       signal: null,

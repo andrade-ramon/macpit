@@ -26,6 +26,7 @@ const run = (over: Partial<Run>): Run => ({
   startedAt: 0,
   endedAt: 1,
   logBytes: 0,
+  repoPath: null,
   ...over,
 });
 
