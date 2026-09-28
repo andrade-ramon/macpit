@@ -93,6 +93,7 @@ Cada fase é entregável e testável sozinha. Marque `[x]` ao concluir (no mesmo
 - [x] Salvar painéis por projeto e acessá-los pela aba Painéis, com busca, persistência e remoção do acesso salvo.
 
 - [x] Painel por projeto: ações e serviços, histórico explicitamente vinculado, portas das execuções ativas e seus descendentes, terminal reutilizado e proteção contra troca de projeto de serviço ativo.
+- [x] Ações e serviços do painel em cards numa grade responsiva.
 
 - CLI instalável (`npm i -g` / Homebrew) com `start|stop|status|open|service|doctor` e assistente de primeira execução
 
