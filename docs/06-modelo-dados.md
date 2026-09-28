@@ -33,6 +33,10 @@ Estado só em memória (perdido ao reiniciar):
 
 ## Tabelas
 
+O reinício do servidor acrescenta o tipo `restart` à auditoria existente (`target: "macpit"`, detalhe com `activeRuns` e `uid`). Não há migration nova; `kind` é texto. `instanceId`, estado de reinício e erros do controlador ficam apenas em memória e não alteram os dados salvos.
+
+**Painéis salvos:** `settings` usa a chave `panels.saved` com um array de até 200 objetos `{ id: string, name: string, repoPath: string, savedAt: number }`, validado pelo `SavedPanelsSchema`. Ausente = `[]`. O id é o identificador estável do repositório derivado do caminho, e `savedAt` é epoch em milissegundos. Há uma entrada por repositório; disponibilidade é calculada em memória usando a última varredura. Caminhos não encontrados continuam salvos. Não há migration nova: a tabela de configurações existente persiste esses dados entre reinícios.
+
 **disk_samples** ✅ (v1): `mount TEXT`, `ts INTEGER` (epoch ms), `used_bytes INTEGER`, `total_bytes INTEGER`. PK `(mount, ts)`, `WITHOUT ROWID`, índice em `ts`.
 Uma linha por volume a cada `MACPIT_DISK_SAMPLE_INTERVAL_MS` (padrão 5 min). Linhas com mais de 30 dias são apagadas a cada nova gravação.
 

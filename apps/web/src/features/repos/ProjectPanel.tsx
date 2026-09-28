@@ -5,22 +5,43 @@ import { useDock } from '../terminal/DockContext';
 import { runStyle, serviceStyle } from '../terminal/runStyle';
 import { fmtShort } from '../../lib/format';
 import { useProject } from './useRepos';
+import { usePanels, useSavePanel } from './usePanels';
 
-export function ProjectPanel({ id }: { id: string }) {
+export function ProjectPanel({ id, fromPanels = false }: { id: string; fromPanels?: boolean }) {
   const { data, error, isPending, isFetching, refetch } = useProject(id);
+  const panels = usePanels();
+  const save = useSavePanel();
+  const saved = panels.data?.some((p) => p.id === id);
   const launch = useRunAction();
   const dock = useDock();
   const stop = useStopService();
   return (
     <div className="min-h-0 flex-1 overflow-auto px-6 pb-6" aria-label="Painel do projeto">
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <Link to="/repos" className="btn btn-md">
-          ← Todos os repositórios
+        <Link to={fromPanels ? '/panels' : '/repos'} className="btn btn-md">
+          {fromPanels ? '← Painéis salvos' : '← Todos os repositórios'}
         </Link>
         <button className="btn btn-md" disabled={isFetching} onClick={() => void refetch()}>
           Atualizar painel
         </button>
+        <button
+          className="btn btn-md btn-primary"
+          disabled={!data || Boolean(error) || saved || save.isPending || panels.isPending}
+          onClick={() => save.mutate(id)}
+        >
+          {saved ? '✓ Painel salvo' : save.isPending ? 'Salvando…' : 'Salvar painel'}
+        </button>
+        {!fromPanels && (
+          <Link to="/panels" className="btn btn-md">
+            Ver painéis salvos
+          </Link>
+        )}
       </div>
+      {save.error && (
+        <p role="alert" className="text-danger">
+          Não foi possível salvar: {save.error.message}
+        </p>
+      )}
       {isPending && <p className="text-text3">Carregando projeto…</p>}
       {error && (
         <p role="alert" className="text-danger">

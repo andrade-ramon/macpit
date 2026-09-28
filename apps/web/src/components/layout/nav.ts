@@ -13,5 +13,6 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/disk', label: 'Disco', icon: '◧', keys: 'g d' },
   { to: '/actions', label: 'Ações', icon: '▶', keys: 'g a' },
   { to: '/repos', label: 'Repositórios', icon: '⎇', keys: 'g r' },
+  { to: '/panels', label: 'Painéis', icon: '▦', keys: 'g b' },
   { to: '/settings', label: 'Configurações', icon: '⚙', keys: 'g s' },
 ];

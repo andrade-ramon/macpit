@@ -57,6 +57,19 @@ Outras decisões da fase 6:
 - Portas são associadas só a execuções vivas e seus descendentes, com conferência de PID e horário de início da raiz. A associação é informativa: não permite matar processos em lote, não infere propriedade por porta esperada e não inclui processos externos.
 - Iniciar serviço ativo/em reinício em outro projeto retorna 409. Parar pelo painel envia o projeto esperado, comparado novamente no servidor antes de parar o grupo; uma tela desatualizada não para um serviço transferido a outro projeto.
 
+## Painéis salvos
+
+- As rotas `/api/panels` exigem a sessão e as verificações globais de Host/Origin. Body e id usam schemas zod; salvar exige id de um repositório da varredura.
+- A chave `panels.saved` contém apenas identificação, nome, caminho e data. Não copia variáveis, segredos, comandos, logs ou métricas. O cliente não escolhe o caminho que será salvo.
+- Salvar, listar, abrir e remover painéis não executa ações nem sinaliza processos. Remover um painel só altera a lista de acessos, sem apagar arquivos ou configurações do projeto. Limite de 200 entradas validado no servidor.
+
+## Reinício do macpit
+
+- `/api/server` e `/api/server/restart` usam autenticação/Host/Origin globais. O POST exige o schema estrito `{ confirm: true }` e rejeita pedidos concorrentes enquanto reinicia. A UI pede confirmação e avisa sobre o encerramento das execuções ativas.
+- Apenas o entrypoint injeta o controlador real. O cliente não fornece executável, argumentos, ambiente, PID ou comando; `process.execve` reutiliza os valores de inicialização do próprio macpit, sem shell, `sudo` ou reinício do macOS.
+- O reinício passa por `app.close`, preservando a parada por grupo e o fechamento do banco. Auditoria `restart` registra alvo e quantidade de execuções; não registra ambiente nem segredos.
+- Testes usam controlador falso ou servidor isolado com `MACPIT_DATA_DIR` temporário e porta de E2E; nunca reiniciam o servidor pessoal ou o macOS.
+
 ## App instalado (PWA)
 
 - O service worker **nunca** guarda `/api/*`, `/ws` nem `/auth`: dados, tokens e cookies não vão para o cache. Só a casca (HTML, JS/CSS com hash, ícones e manifest) é guardada. As regras estão em `apps/web/src/sw/routing.ts`, com testes.

@@ -16,6 +16,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ### Added
 
+- **Reiniciar macpit:** botão nas Configurações com confirmação e contagem de execuções ativas, fechamento ordenado, recarga do processo pelo mesmo Node e reconexão automática por `instanceId`. Preserva dados e sessão; não reinicia o macOS. Rotas `/api/server` e `/api/server/restart`, auditoria e E2E de reinício real do servidor de teste.
+
+- **Painéis salvos:** botão Salvar painel nos projetos e aba Painéis com busca, abertura da visão ao vivo, URL persistente, indicação de repositório indisponível e remoção confirmada. Persistência em `settings.panels.saved`, rotas `/api/panels`, atalho `g b`, entrada na paleta e testes de API/E2E; salvar ou abrir não inicia ações.
+
 - **Agentes de IA (Claude Code e Codex):** regras num só `AGENTS.md` (o `CLAUDE.md` importa); roteiros compartilhados em `docs/agents/` (implementar funcionalidade, atualizar docs, revisão de segurança); comandos `/implement-feature`, `/update-docs`, `/security-review` no Claude Code; `scripts/install-codex-prompts.sh` instala os mesmos roteiros como prompts do Codex.
 - **Open-source:** licença MIT, `SECURITY.md`, `CONTRIBUTING.md`, modelos de issue/PR e CI no GitHub Actions (macOS: typecheck, lint, format, testes, build e E2E). Dados de exemplo do design sem nomes internos; capturas de tela no README.
 - **Ações:** parâmetro repositório sem padrão abre, ao executar, um popup com a lista dos repositórios (busca, setas, ↵); escolher executa. Vale para cards, Visão geral, paleta ⌘K e "Executar de novo" (`features/actions/RunLauncher.tsx`).

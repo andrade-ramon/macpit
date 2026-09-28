@@ -6,6 +6,7 @@ export * from './schemas/processes.js';
 export * from './schemas/projects.js';
 export * from './schemas/repos.js';
 export * from './schemas/settings.js';
+export * from './schemas/server.js';
 export * from './schemas/system.js';
 export * from './schemas/ws.js';
 export * from './template.js';

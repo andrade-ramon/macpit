@@ -6,6 +6,8 @@ Em **Repositórios**, clique no nome de um projeto ou em **Abrir painel do proje
 
 ## Conteúdo e execução
 
+Use **Salvar painel** para guardar um acesso permanente ao projeto. A aba [Painéis](paineis.md) permite escolher os acessos salvos e abrir a mesma visão ao vivo, mantendo os dados no servidor entre sessões.
+
 - **Ações disponíveis:** ações com parâmetro `type: repo`, inclusive as que têm outro repositório padrão. **Executar aqui** escolhe explicitamente o projeto aberto e usa suas variáveis; se faltar um valor, abre o formulário de Ações com esse projeto selecionado. Ações que já rodaram no projeto continuam listadas enquanto houver histórico retido, mesmo após remover o parâmetro; nesse caso, executar pelo painel fica desabilitado.
 - **Serviços:** seção separada, com estado do serviço pertencente ao projeto, acesso ao terminal e botão para parar. Cada ação persistente continua tendo **uma única instância global**, como antes: se ativa em outro projeto, aparece “Ativo em outro projeto” e não pode ser iniciada aqui. Isso também vale durante reinício pendente. O backend recusa a troca com 409; a parada pelo painel inclui o projeto esperado para não atingir um serviço transferido desde a última atualização.
 - **Portas:** sockets de execuções ativas vinculadas ao projeto, incluindo descendentes visíveis no snapshot de processos. Links levam à página Portas e ao detalhe do processo. Uma porta esperada no health-check não é considerada aberta sem evidência na coleta.

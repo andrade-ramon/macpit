@@ -2,6 +2,7 @@ import { buildApp } from './app.js';
 import { loadConfig, migrateLegacyDataDir } from './config/index.js';
 import { loadOrCreateToken } from './lib/auth.js';
 import { isRootUser } from './modules/system/health.js';
+import fs from 'node:fs';
 
 async function main() {
   const config = loadConfig();
@@ -11,8 +12,35 @@ async function main() {
     );
   }
   const token = loadOrCreateToken(config.dataDir);
+  const execve = process.execve;
+  const executable = process.execPath;
+  const args = [executable, ...process.execArgv, ...process.argv.slice(1)];
+  const env = { ...process.env };
+  let closing: Promise<void> | undefined;
   const { app } = await buildApp(config, token, {
     logger: { level: config.env === 'development' ? 'info' : 'warn' },
+    ...(execve && config.env !== 'development'
+      ? {
+          restart: {
+            prepare: () => {
+              fs.accessSync(executable, fs.constants.X_OK);
+              fs.accessSync(process.argv[1]!, fs.constants.R_OK);
+            },
+            restart: async (): Promise<void> => {
+              closing ??= app.close();
+              await closing;
+              try {
+                // Mantém PID, stdio, usuário e supervisão do launchd; carrega novamente todo o código.
+                execve(executable, args, env);
+              } catch {
+                // O app já está fechado. O LaunchAgent pode recuperar a saída não zero.
+                process.stderr.write('Não foi possível recarregar o macpit; inicie o servidor novamente.\n');
+                process.exit(1);
+              }
+            },
+          },
+        }
+      : {}),
   });
 
   await app.listen({ host: config.host, port: config.port });
@@ -29,7 +57,8 @@ async function main() {
 
   const shutdown = async (signal: string) => {
     app.log.info({ signal }, 'encerrando');
-    await app.close();
+    closing ??= app.close();
+    await closing;
     process.exit(0);
   };
   process.once('SIGINT', () => void shutdown('SIGINT'));
