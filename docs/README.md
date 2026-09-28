@@ -1,5 +1,10 @@
 # Documentação
 
+- [Painel por projeto](features/projetos.md): ações, serviços, portas e execuções por repositório.
+- [Painéis salvos](features/paineis.md): salvar, listar e abrir painéis de projetos pela aba Painéis.
+- [Reiniciar macpit](features/reinicio.md): botão nas Configurações, confirmação e reconexão automática.
+- [ADR 0003](adr/0003-vinculo-projeto.md): vínculo explícito de execuções com projetos.
+
 | Doc                                      | Conteúdo                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [01-visao.md](01-visao.md)               | Objetivo, escopo, funcionalidades                                                                                                                                                                                                                                                                                                                                                                                   |

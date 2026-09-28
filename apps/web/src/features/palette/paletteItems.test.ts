@@ -26,6 +26,11 @@ describe('score', () => {
 });
 
 describe('buildItems', () => {
+  it('encontra a aba de painéis salvos sem executar ações', () => {
+    expect(buildItems('paineis', [])).toContainEqual(
+      expect.objectContaining({ kind: 'page', label: 'Painéis', to: '/panels' }),
+    );
+  });
   it('ações primeiro, depois páginas; busca de porta e processo', () => {
     const items = buildItems('tun', [
       act('Túnel DB', { params: [{ name: 'h', secret: false, type: 'text' }] }),

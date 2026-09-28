@@ -6,6 +6,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ### Changed
 
+- **Painel por projeto:** ações e serviços organizados em cards numa grade responsiva, com botões na base de cada bloco.
+
+- **Painel por projeto:** acesso pela página Repositórios, ações e serviços contextualizados, portas das execuções ativas e seus filhos, histórico com terminal/log no rodapé e atualização periódica. Migration 6 registra o repositório de cada nova execução; serviços ativos em outro projeto são bloqueados, inclusive durante reinício pendente, e a parada confere o projeto esperado. Inclui testes de migração, API, isolamento e E2E no Chrome.
+
 - **Projeto renomeado: bash-monitor → macpit** (repositório `andrade-ramon/macpit`). Pacotes `@macpit/*`, variáveis `MACPIT_*`, diretório `~/.macpit`, LaunchAgent `com.macpit.server`, cookie `macpit_session`, pasta do design em `docs/design/`. Compatibilidade com instalações antigas:
   - `~/.bash-monitor` é movido para `~/.macpit` no primeiro boot (fica um link no lugar antigo);
   - `BM_*` continua valendo na configuração; as ações ainda recebem `BM_REPO_*`, `BM_RUN_ID` e `BM_ACTION_ID`;
@@ -13,6 +17,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
   - exportações `bash-monitor/actions` podem ser importadas; o LaunchAgent `com.bash-monitor.server` é removido ao instalar o novo.
 
 ### Added
+
+- **Reiniciar macpit:** botão nas Configurações com confirmação e contagem de execuções ativas, fechamento ordenado, recarga do processo pelo mesmo Node e reconexão automática por `instanceId`. Preserva dados e sessão; não reinicia o macOS. Rotas `/api/server` e `/api/server/restart`, auditoria e E2E de reinício real do servidor de teste.
+
+- **Painéis salvos:** botão Salvar painel nos projetos e aba Painéis com busca, abertura da visão ao vivo, URL persistente, indicação de repositório indisponível e remoção confirmada. Persistência em `settings.panels.saved`, rotas `/api/panels`, atalho `g b`, entrada na paleta e testes de API/E2E; salvar ou abrir não inicia ações.
 
 - **Agentes de IA (Claude Code e Codex):** regras num só `AGENTS.md` (o `CLAUDE.md` importa); roteiros compartilhados em `docs/agents/` (implementar funcionalidade, atualizar docs, revisão de segurança); comandos `/implement-feature`, `/update-docs`, `/security-review` no Claude Code; `scripts/install-codex-prompts.sh` instala os mesmos roteiros como prompts do Codex.
 - **Open-source:** licença MIT, `SECURITY.md`, `CONTRIBUTING.md`, modelos de issue/PR e CI no GitHub Actions (macOS: typecheck, lint, format, testes, build e E2E). Dados de exemplo do design sem nomes internos; capturas de tela no README.

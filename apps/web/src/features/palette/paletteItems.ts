@@ -53,6 +53,7 @@ const KEYWORDS: Record<string, string> = {
   '/disk': 'df du espaco',
   '/actions': 'comandos scripts tunel',
   '/repos': 'github git projetos repos',
+  '/panels': 'paineis salvos projetos favoritos',
   '/settings': 'notificacoes ajustes aparencia tema',
 };
 

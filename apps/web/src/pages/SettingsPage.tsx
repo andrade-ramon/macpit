@@ -6,6 +6,7 @@ import { useLayout } from '../components/layout/LayoutContext';
 import { Workspace } from '../components/layout/Workspace';
 import { Segmented, Switch } from '../components/ui/Switch';
 import { InstallCard } from '../features/pwa/InstallCard';
+import { RestartCard } from '../features/settings/RestartCard';
 import { SHORTCUT_HELP } from '../features/shortcuts/shortcuts';
 import { useHealth } from '../hooks/useHealth';
 import { api } from '../lib/api';
@@ -13,6 +14,7 @@ import { PALETTES, setDensity, setPalette, useAppearance, type Density } from '.
 
 const KEY = ['settings', 'notifications'];
 const SECTIONS = [
+  { id: 'settings-server', label: 'Servidor do macpit' },
   { id: 'settings-notifications', label: 'Notificações' },
   { id: 'settings-appearance', label: 'Aparência' },
   { id: 'settings-install', label: 'Instalar como app' },
@@ -112,6 +114,8 @@ export function SettingsPage() {
       mainClassName="flex flex-col gap-4 overflow-auto px-6 pb-6 pt-[18px]"
     >
       <h1 className="m-0 text-[22px] font-semibold tracking-[-0.01em]">Configurações</h1>
+
+      <RestartCard />
 
       <Section id="settings-notifications">
         <div className="flex items-center justify-between gap-3">
