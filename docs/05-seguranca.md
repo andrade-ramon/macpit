@@ -50,6 +50,13 @@ Outras decisões da fase 6:
 - "Abrir pasta" (`POST /api/repos/:id/open`) roda `open` via `execFile` com o caminho como argumento, e **só** para um id da varredura: não recebe caminho do cliente.
 - O link para o GitHub é sempre `https://github.com/<owner>/<nome>`, montado a partir do remote já validado.
 
+## Painel por projeto
+
+- A nova rota `GET /api/repos/:id/project` usa a autenticação e as validações globais de Host/Origin. O id é validado; o repositório precisa existir na varredura. Segredos seguem mascarados pela representação pública de repositório.
+- O vínculo `runs.repo_path` vem de `RepoService.resolve`, nunca de um campo livre de projeto enviado pelo cliente. Nenhum shell ou acesso adicional a arquivos foi introduzido.
+- Portas são associadas só a execuções vivas e seus descendentes, com conferência de PID e horário de início da raiz. A associação é informativa: não permite matar processos em lote, não infere propriedade por porta esperada e não inclui processos externos.
+- Iniciar serviço ativo/em reinício em outro projeto retorna 409. Parar pelo painel envia o projeto esperado, comparado novamente no servidor antes de parar o grupo; uma tela desatualizada não para um serviço transferido a outro projeto.
+
 ## App instalado (PWA)
 
 - O service worker **nunca** guarda `/api/*`, `/ws` nem `/auth`: dados, tokens e cookies não vão para o cache. Só a casca (HTML, JS/CSS com hash, ícones e manifest) é guardada. As regras estão em `apps/web/src/sw/routing.ts`, com testes.

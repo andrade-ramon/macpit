@@ -178,7 +178,7 @@ export async function buildApp(config: Config, token: string, opts: BuildOptions
     ...(opts.shellImport ? { shellImport: opts.shellImport } : {}),
   });
   notifyRoutes(app, { notifier });
-  repoRoutes(app, { repos });
+  repoRoutes(app, { repos, actions, runs, manager, processes, ports });
   wsRoutes(app, hub);
   await registerStatic(app, config);
 

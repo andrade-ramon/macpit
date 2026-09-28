@@ -6,6 +6,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ### Changed
 
+- **Painel por projeto:** acesso pela página Repositórios, ações e serviços contextualizados, portas das execuções ativas e seus filhos, histórico com terminal/log no rodapé e atualização periódica. Migration 6 registra o repositório de cada nova execução; serviços ativos em outro projeto são bloqueados, inclusive durante reinício pendente, e a parada confere o projeto esperado. Inclui testes de migração, API, isolamento e E2E no Chrome.
+
 - **Projeto renomeado: bash-monitor → macpit** (repositório `andrade-ramon/macpit`). Pacotes `@macpit/*`, variáveis `MACPIT_*`, diretório `~/.macpit`, LaunchAgent `com.macpit.server`, cookie `macpit_session`, pasta do design em `docs/design/`. Compatibilidade com instalações antigas:
   - `~/.bash-monitor` é movido para `~/.macpit` no primeiro boot (fica um link no lugar antigo);
   - `BM_*` continua valendo na configuração; as ações ainda recebem `BM_REPO_*`, `BM_RUN_ID` e `BM_ACTION_ID`;

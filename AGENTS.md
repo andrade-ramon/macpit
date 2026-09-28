@@ -65,6 +65,7 @@ Web:
 
 - `api<T>()` (`lib/api.ts`), `useChannel<T>(canal)` e `useWsStatus()` (`hooks/useChannel.ts`), `mergeHistory` (`lib/history.ts`), `formatBytes/formatPct/formatDuration` (`lib/format.ts`).
 - `WsClient.send(msg)` para mensagens de comando; `useWsStatus()` também abre a conexão.
+- Painel por projeto: `useRunAction()(acao, repo)` executa no repositório escolhido (inclusive sobrepondo o padrão) ou abre o formulário com ele selecionado. `Run.repoPath` vem da resolução no servidor; nunca reconstrua o vínculo pelo `cwd` ou pela configuração atual da ação.
 - Layout: toda página renderiza `<Workspace left right>` (3 colunas; laterais recolhem < 1500px — `useLayout().showRail('right')` ao selecionar algo) e `PageTitle`/`RailEmpty`. Execuções abrem no terminal do rodapé com `useDock().openRun(runId)` (nunca crie outro painel de terminal). Botões de "executar ação" usam `useRunAction()` (`RunLauncher.tsx`): decide entre executar direto, popup de repositório ou formulário nos detalhes.
 - Componentes: `Modal`, `ConfirmDialog` (título, `hint`, `command`, `isRoot`), `Switch`/`Chip`/`Segmented`/`SearchInput`, `Sparkline`, `RunTerminal`, `TailViewer`; selos de estado em `features/terminal/runStyle.ts` (`serviceStyle`, `runStyle`). Classes: `.card`, `.tile`, `.eyebrow`, `.card-title`, `.btn` (+ `-sm/-md/-lg/-xl`, `-primary`, `-danger`, `-danger-outline`, `-danger-solid`, `-ghost`, `-icon`), `.input`, `.term-box`, `.kbd`, `.list-row`, `.table-head`/`.data-row`.
 - Formatos pt-BR do design: `fmtNum`, `fmtBytes`, `fmtDur`, `fmtShort` (`lib/format.ts`).

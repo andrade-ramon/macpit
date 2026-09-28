@@ -26,6 +26,93 @@ const details = (page: Page, label: string) => page.getByRole('complementary', {
 
 test.describe.configure({ mode: 'serial' });
 
+test('painel de projeto: vínculo, serviços, portas, histórico e formulário no projeto escolhido', async ({
+  page,
+  request,
+}) => {
+  await request.put('/api/settings/repos', {
+    headers: auth,
+    data: { roots: [`${E2E_DATA_DIR}/projetos`], maxDepth: 2 },
+  });
+  const { repos } = await (await request.get('/api/repos', { headers: auth })).json();
+  const loja = repos.find((r: { name: string }) => r.name === 'loja');
+  const rascunho = repos.find((r: { name: string }) => r.name === 'rascunho');
+  await request.put('/api/repos/selection', {
+    headers: auth,
+    data: { paths: repos.map((r: { path: string }) => r.path) },
+  });
+  const service = await createAction(request, {
+    name: 'E2E serviço por projeto',
+    persistent: true,
+    command: `node -e 'const s=require("node:http").createServer((q,r)=>r.end("ok"));s.listen(0,"127.0.0.1",()=>console.log("projeto-pronto"))'`,
+    params: [{ name: 'repo', type: 'repo', default: loja.id }],
+  });
+  await createAction(request, {
+    name: 'E2E projeto com campo',
+    command: 'echo "projeto=$MACPIT_REPO_NAME valor={{valor}}"',
+    params: [
+      { name: 'repo', type: 'repo' },
+      { name: 'valor', label: 'Valor do projeto' },
+    ],
+  });
+  await login(page);
+  await page.goto('/repos');
+  await page.getByRole('button', { name: 'Só GitHub', exact: true }).click();
+  await page.getByRole('button', { name: 'Abrir projeto rascunho', exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(`project=${rascunho.id}`));
+  const main = page.getByRole('main');
+  const svc = main.getByRole('article', { name: 'E2E serviço por projeto' });
+  await svc.getByRole('button', { name: 'Iniciar aqui' }).click();
+  await expect(terminal(page)).toContainText('projeto-pronto');
+  const overviewUrl = `/api/repos/${rascunho.id}/project`;
+  await expect
+    .poll(async () => (await (await request.get(overviewUrl, { headers: auth })).json()).ports.length)
+    .toBe(1);
+  await expect(
+    main.getByRole('region', { name: 'Portas do projeto', exact: true }).getByRole('link', { name: /^TCP/ }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(svc.getByRole('button', { name: 'Parar serviço' })).toBeVisible();
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await expect(svc.getByRole('button', { name: 'Parar serviço' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await page.screenshot({ path: 'test-results/painel-projeto.png', fullPage: true });
+  const overview = await (await request.get(overviewUrl, { headers: auth })).json();
+  expect(overview.runs[0].repoPath).toBe(rascunho.path);
+  await page
+    .getByRole('navigation', { name: 'Projetos', exact: true })
+    .getByRole('button', { name: /acme\/loja/ })
+    .click();
+  await expect(svc.getByText('Ativo em outro projeto')).toBeVisible();
+  await expect(svc.getByRole('button', { name: 'Iniciar aqui' })).toBeDisabled();
+  await expect(main.getByRole('region', { name: 'Execuções do projeto', exact: true })).not.toContainText(
+    'E2E serviço por projeto',
+  );
+  await page
+    .getByRole('navigation', { name: 'Projetos', exact: true })
+    .getByRole('button', { name: /rascunho/ })
+    .click();
+  await svc.getByRole('button', { name: 'Parar serviço' }).click();
+  await expect(svc.getByRole('button', { name: 'Iniciar aqui' })).toBeVisible();
+  const history = main.getByRole('region', { name: 'Execuções do projeto', exact: true });
+  await history.getByRole('button', { name: /E2E serviço por projeto/ }).click();
+  await expect(terminal(page)).toContainText('projeto-pronto');
+  await main
+    .getByRole('article', { name: 'E2E projeto com campo' })
+    .getByRole('button', { name: 'Executar aqui' })
+    .click();
+  await expect(page).toHaveURL(new RegExp(`repo=${rascunho.id}`));
+  const actionDetails = details(page, 'Ações');
+  await actionDetails.getByLabel('Valor do projeto').fill('teste');
+  await actionDetails.getByRole('button', { name: /Executar/ }).click();
+  await expect(terminal(page)).toContainText('projeto=rascunho valor=teste');
+  await page.goto('/repos?project=inexistente');
+  await expect(main.getByRole('alert')).toContainText('repositório não encontrado');
+  await request.delete(`/api/actions/${service.id}`, { headers: auth });
+  await request.put('/api/settings/repos', { headers: auth, data: { roots: [], maxDepth: 3 } });
+});
+
 test('sem token mostra a tela de acesso; com token entra na Visão geral com métricas ao vivo', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Entrar no macpit' })).toBeVisible();

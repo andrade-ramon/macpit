@@ -3,6 +3,7 @@ export * from './schemas/disk.js';
 export * from './schemas/health.js';
 export * from './schemas/ports.js';
 export * from './schemas/processes.js';
+export * from './schemas/projects.js';
 export * from './schemas/repos.js';
 export * from './schemas/settings.js';
 export * from './schemas/system.js';

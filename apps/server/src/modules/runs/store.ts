@@ -7,6 +7,7 @@ interface RunRow {
   action_name: string;
   command: string;
   cwd: string;
+  repo_path: string | null;
   pid: number | null;
   status: RunStatus;
   exit_code: number | null;
@@ -27,6 +28,7 @@ const toRun = (r: RunRow): StoredRun => ({
   actionName: r.action_name,
   command: r.command,
   cwd: r.cwd,
+  repoPath: r.repo_path,
   pid: r.pid,
   status: r.status,
   exitCode: r.exit_code,
@@ -48,8 +50,8 @@ export class RunStore {
   insert(run: StoredRun): void {
     this.db
       .prepare(
-        `INSERT INTO runs (id, action_id, action_name, command, cwd, pid, status, exit_code, signal, started_at, ended_at, log_path, log_bytes)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO runs (id, action_id, action_name, command, cwd, pid, status, exit_code, signal, started_at, ended_at, log_path, log_bytes, repo_path)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         run.id,
@@ -65,6 +67,7 @@ export class RunStore {
         run.endedAt,
         run.logPath,
         run.logBytes,
+        run.repoPath,
       );
   }
 
@@ -95,6 +98,25 @@ export class RunStore {
     const row = this.db
       .prepare('SELECT * FROM runs WHERE action_id = ? ORDER BY started_at DESC LIMIT 1')
       .get(actionId) as RunRow | undefined;
+    return row ? publicRun(toRun(row)) : null;
+  }
+
+  forProject(repoPath: string): Run[] {
+    return (
+      this.db
+        .prepare(
+          `SELECT * FROM runs WHERE repo_path = ? AND
+      (status = 'running' OR id IN (SELECT id FROM runs WHERE repo_path = ? ORDER BY started_at DESC LIMIT 50))
+      ORDER BY started_at DESC`,
+        )
+        .all(repoPath, repoPath) as unknown as RunRow[]
+    ).map((r) => publicRun(toRun(r)));
+  }
+
+  lastForProjectAction(repoPath: string, actionId: string): Run | null {
+    const row = this.db
+      .prepare('SELECT * FROM runs WHERE repo_path = ? AND action_id = ? ORDER BY started_at DESC LIMIT 1')
+      .get(repoPath, actionId) as RunRow | undefined;
     return row ? publicRun(toRun(row)) : null;
   }
 

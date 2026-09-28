@@ -88,6 +88,8 @@ Cada fase é entregável e testável sozinha. Marque `[x]` ao concluir (no mesmo
 
 ## Próximos passos (ideias, fora do plano original)
 
+- [x] Painel por projeto: ações e serviços, histórico explicitamente vinculado, portas das execuções ativas e seus descendentes, terminal reutilizado e proteção contra troca de projeto de serviço ativo.
+
 - CLI instalável (`npm i -g` / Homebrew) com `start|stop|status|open|service|doctor` e assistente de primeira execução
 
 - Containers Docker e `brew services` como fontes de processos/serviços

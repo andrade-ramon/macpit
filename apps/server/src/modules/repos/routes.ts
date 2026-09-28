@@ -1,12 +1,14 @@
 import type { FastifyInstance } from 'fastify';
 import { IdParamSchema } from '@macpit/shared';
 import { parseOr400 } from '../../lib/http.js';
-import type { RepoService } from './service.js';
+import { projectOverview, type ProjectDeps } from './project.js';
 
-export function repoRoutes(app: FastifyInstance, deps: { repos: RepoService }): void {
+export function repoRoutes(app: FastifyInstance, deps: ProjectDeps): void {
   const { repos } = deps;
 
   app.get('/api/repos', async () => repos.listFresh());
+
+  app.get('/api/repos/:id/project', async (req) => projectOverview(parseOr400(IdParamSchema, req.params).id, deps));
 
   app.post('/api/repos/scan', async () => repos.scan());
 

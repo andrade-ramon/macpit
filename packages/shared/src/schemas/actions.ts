@@ -106,6 +106,8 @@ export const RunSchema = z.object({
   actionName: z.string(),
   command: z.string(),
   cwd: z.string(),
+  /** Projeto resolvido ao iniciar; null para execuções antigas ou sem parâmetro repo. */
+  repoPath: z.string().nullable(),
   pid: z.number().int().nullable(),
   status: RunStatusSchema,
   exitCode: z.number().int().nullable(),
@@ -133,6 +135,9 @@ export const RunStartSchema = z.object({
   /** Valores dos `{{parâmetros}}` (os ausentes usam o padrão). */
   params: z.record(z.string(), z.string().max(10_000)).default({}),
 });
+
+/** Guarda de contexto opcional para parar pelo painel de um projeto. */
+export const ServiceStopSchema = z.object({ repoPath: z.string().min(1).max(4096).optional() });
 
 /** Arquivo de exportação/importação de ações. */
 export const ActionsExportSchema = z.object({

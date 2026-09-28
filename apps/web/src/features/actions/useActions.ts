@@ -30,6 +30,7 @@ function useInvalidate() {
   return () => {
     void qc.invalidateQueries({ queryKey: ['actions'] });
     void qc.invalidateQueries({ queryKey: ['runs'] });
+    void qc.invalidateQueries({ queryKey: ['projects'] });
   };
 }
 
@@ -86,7 +87,13 @@ export function useStopRun() {
 export function useStopService() {
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (actionId: string) => api<Action>(`/api/actions/${actionId}/stop`, { method: 'POST' }),
+    mutationFn: (input: string | { actionId: string; repoPath: string }) => {
+      const actionId = typeof input === 'string' ? input : input.actionId;
+      return api<Action>(`/api/actions/${actionId}/stop`, {
+        method: 'POST',
+        ...(typeof input === 'string' ? {} : { body: JSON.stringify({ repoPath: input.repoPath }) }),
+      });
+    },
     onSuccess: invalidate,
   });
 }

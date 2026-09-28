@@ -16,7 +16,7 @@ export function missingAfterRepo(a: Action, repo: Repo): boolean {
   return a.params.some((p) => p.type !== 'repo' && p.default === undefined && !provided.has(p.name.toLowerCase()));
 }
 
-type Launch = (a: Action) => void;
+type Launch = (a: Action, repo?: Repo) => void;
 const Ctx = createContext<Launch | null>(null);
 
 /**
@@ -33,7 +33,8 @@ export function RunLauncherProvider({ children }: { children: ReactNode }) {
 
   const runWithRepo = useCallback(
     (a: Action, repo: Repo) => {
-      const param = repoToPick(a)!;
+      const param = a.params.find((p) => p.type === 'repo');
+      if (!param || !repo.imported) return;
       if (missingAfterRepo(a, repo)) {
         setPicking(undefined);
         return navigate(`/actions?sel=${a.id}&repo=${repo.id}`);
@@ -53,18 +54,26 @@ export function RunLauncherProvider({ children }: { children: ReactNode }) {
   );
 
   const launch = useCallback<Launch>(
-    (a) => {
+    (a, repo) => {
+      if (start.isPending) return;
       start.reset();
+      if (repo) return runWithRepo(a, repo);
       if (repoToPick(a)) return setPicking(a);
       if (a.params.length) return navigate(`/actions?sel=${a.id}`);
       start.mutate({ actionId: a.id }, { onSuccess: (r) => dock.openRun(r.id) });
     },
-    [start, navigate, dock],
+    [start, navigate, dock, runWithRepo],
   );
 
   return (
     <Ctx.Provider value={launch}>
       {children}
+      <Modal open={Boolean(start.error && !picking)} onClose={() => start.reset()} label="Não foi possível executar">
+        <p className="text-danger">{start.error?.message}</p>
+        <button className="btn btn-md" onClick={() => start.reset()}>
+          Fechar
+        </button>
+      </Modal>
       <Modal
         open={Boolean(picking)}
         onClose={() => setPicking(undefined)}

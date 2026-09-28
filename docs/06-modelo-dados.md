@@ -56,6 +56,8 @@ O estado dos serviços (health, reinícios) fica só em memória.
 - `exited` = código 0; `failed` = código ≠ 0 ou morto por sinal que não foi pedido; `killed` = parado pelo usuário ou pelo desligamento do servidor; `interrupted` = estava `running` quando o servidor caiu (marcado no boot).
 - Retenção: as 50 execuções mais recentes por ação. As mais antigas são apagadas junto com o log.
 
+**Migration 6 — projeto da execução:** `runs.repo_path TEXT NULL`, com índice `runs_repo_started (repo_path, started_at DESC)`. Guarda o caminho do repositório resolvido pelo servidor no início da execução, mesmo com `cwd` próprio na ação. Não muda após edição/exclusão da ação. Execuções preexistentes e sem parâmetro `repo` permanecem com `NULL`; não há preenchimento por inferência. O campo público é `Run.repoPath`. Mover a pasta não transfere o histórico. A consulta do painel retorna até 50 recentes do projeto mais todas as ativas, dentro da retenção existente.
+
 **repo_vars** ✅ (v5): `repo_path TEXT`, `name TEXT`, `value TEXT`, `secret INTEGER 0/1`, PK `(repo_path, name)`. São as variáveis por repositório, chaveadas pelo caminho: renomear ou mover a pasta "perde" as variáveis. Os valores ficam **em texto** no banco (0600), inclusive os segredos. Segredos nunca voltam pela API. A lista de repositórios não é persistida (fica em memória).
 
 **audit_log** ✅ (v2): `id INTEGER PK AUTOINCREMENT`, `ts`, `kind` (`kill | tail | run | stop | repo_vars`), `target`, `detail TEXT` (JSON com `uid` e o contexto: runId, comando, sinal…).
