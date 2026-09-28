@@ -1,6 +1,6 @@
 import type { Action, ActionInput, ActionParam } from '@macpit/shared';
-import { PARAM_NAME_RE, validateTemplate } from '@macpit/shared';
-import { useEffect, useRef, useState } from 'react';
+import { ActionInputSchema, PARAM_NAME_RE, validateTemplate } from '@macpit/shared';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useHealth } from '../../hooks/useHealth';
 import { useRepos } from '../repos/useRepos';
 import { ENV_KEY_RE, envToRows, findRepo, missingParams, rowsToEnv, type EnvRow } from './actionUtils';
@@ -9,30 +9,35 @@ import { useDeleteAction, useSaveAction } from './useActions';
 interface Props {
   /** `undefined` = nova ação. */
   action: Action | undefined;
+  initialInput?: ActionInput;
+  assisted?: boolean;
+  introduction?: ReactNode;
   groups: string[];
   onClose: () => void;
   onSaved: (a: Action) => void;
 }
 
-export function ActionEditor({ action, groups, onClose, onSaved }: Props) {
+export function ActionEditor({ action, initialInput, assisted, introduction, groups, onClose, onSaved }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
+  const submitting = useRef(false);
+  const initial = action ?? (initialInput ? ActionInputSchema.parse(initialInput) : undefined);
   const { data: health } = useHealth();
   const save = useSaveAction();
   const del = useDeleteAction();
   const { data: repoList } = useRepos();
   const repos = (repoList?.repos ?? []).filter((r) => r.imported);
-  const [name, setName] = useState(action?.name ?? '');
-  const [command, setCommand] = useState(action?.command ?? '');
-  const [cwd, setCwd] = useState(action?.cwd ?? '');
-  const [group, setGroup] = useState(action?.group ?? '');
-  const [icon, setIcon] = useState(action?.icon ?? '');
-  const [favorite, setFavorite] = useState(action?.favorite ?? false);
-  const [env, setEnv] = useState<EnvRow[]>(action ? envToRows(action.env) : []);
-  const [params, setParams] = useState<ActionParam[]>(action?.params ?? []);
-  const [persistent, setPersistent] = useState(action?.persistent ?? false);
-  const [expectedPort, setExpectedPort] = useState(action?.expectedPort ? String(action.expectedPort) : '');
-  const [autoRestart, setAutoRestart] = useState(action?.autoRestart ?? false);
-  const [autoStart, setAutoStart] = useState(action?.autoStart ?? false);
+  const [name, setName] = useState(initial?.name ?? '');
+  const [command, setCommand] = useState(initial?.command ?? '');
+  const [cwd, setCwd] = useState(initial?.cwd ?? '');
+  const [group, setGroup] = useState(initial?.group ?? '');
+  const [icon, setIcon] = useState(initial?.icon ?? '');
+  const [favorite, setFavorite] = useState(initial?.favorite ?? false);
+  const [env, setEnv] = useState<EnvRow[]>(initial ? envToRows(initial.env) : []);
+  const [params, setParams] = useState<ActionParam[]>(initial?.params ?? []);
+  const [persistent, setPersistent] = useState(initial?.persistent ?? false);
+  const [expectedPort, setExpectedPort] = useState(initial?.expectedPort ? String(initial.expectedPort) : '');
+  const [autoRestart, setAutoRestart] = useState(assisted ? false : (initial?.autoRestart ?? false));
+  const [autoStart, setAutoStart] = useState(assisted ? false : (initial?.autoStart ?? false));
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
@@ -70,7 +75,8 @@ export function ActionEditor({ action, groups, onClose, onSaved }: Props) {
     !autoStartBlocked;
 
   const submit = () => {
-    if (!valid) return;
+    if (!valid || submitting.current) return;
+    submitting.current = true;
     const input: ActionInput = {
       name,
       command,
@@ -81,11 +87,19 @@ export function ActionEditor({ action, groups, onClose, onSaved }: Props) {
       env: rowsToEnv(env),
       params: params.map((p) => ({ ...p, default: p.default === '' ? undefined : p.default })),
       persistent,
-      autoRestart: persistent && autoRestart,
-      autoStart: persistent && autoStart,
+      autoRestart: !assisted && persistent && autoRestart,
+      autoStart: !assisted && persistent && autoStart,
       ...(persistent && expectedPort ? { expectedPort: portNum } : {}),
     };
-    save.mutate({ ...(action ? { id: action.id } : {}), input }, { onSuccess: onSaved });
+    save.mutate(
+      { ...(action ? { id: action.id } : {}), input },
+      {
+        onSuccess: onSaved,
+        onSettled: () => {
+          submitting.current = false;
+        },
+      },
+    );
   };
 
   const setParam = (i: number, patch: Partial<ActionParam>) =>
@@ -110,7 +124,21 @@ export function ActionEditor({ action, groups, onClose, onSaved }: Props) {
           submit();
         }}
       >
-        <h2 className="text-lg font-semibold">{action ? 'Editar ação' : 'Nova ação'}</h2>
+        <h2 className="text-lg font-semibold">
+          {action ? 'Editar ação' : assisted ? 'Revisar ação da IA' : 'Nova ação'}
+        </h2>
+        {introduction && (
+          <details className="rounded-lg border border-line p-3">
+            <summary className="cursor-pointer text-sm text-text2">Explicação da sugestão original da IA</summary>
+            <div className="mt-3">{introduction}</div>
+          </details>
+        )}
+        {assisted && (
+          <p className="text-sm text-text2">
+            Confira o comando abaixo. Criar não executa; início e reinício automáticos ficam desligados. Escolha
+            diretório e repositório localmente, se necessário.
+          </p>
+        )}
 
         <div className="grid grid-cols-[72px_1fr] gap-3">
           <label className="space-y-1 text-sm">
@@ -318,6 +346,7 @@ export function ActionEditor({ action, groups, onClose, onSaved }: Props) {
                 <input
                   type="checkbox"
                   checked={autoRestart}
+                  disabled={assisted}
                   onChange={(e) => setAutoRestart(e.target.checked)}
                   className="mt-1"
                 />
@@ -330,6 +359,7 @@ export function ActionEditor({ action, groups, onClose, onSaved }: Props) {
                 <input
                   type="checkbox"
                   checked={autoStart}
+                  disabled={assisted}
                   onChange={(e) => setAutoStart(e.target.checked)}
                   className="mt-1"
                 />
@@ -449,10 +479,10 @@ export function ActionEditor({ action, groups, onClose, onSaved }: Props) {
             ))}
           <div className="ml-auto flex gap-2">
             <button type="button" onClick={onClose} className="btn">
-              Cancelar
+              {assisted ? 'Voltar à IA' : 'Cancelar'}
             </button>
             <button type="submit" disabled={!valid || save.isPending} className="btn btn-primary">
-              {save.isPending ? 'Salvando…' : 'Salvar'}
+              {save.isPending ? 'Salvando…' : assisted ? 'Criar ação' : 'Salvar'}
             </button>
           </div>
         </div>

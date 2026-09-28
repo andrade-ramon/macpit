@@ -15,6 +15,8 @@ import { createAudit, type Audit } from './lib/audit.js';
 import { HttpError, sendError } from './lib/http.js';
 import { registerSecurity } from './lib/security.js';
 import { actionRoutes } from './modules/actions/routes.js';
+import { aiRoutes } from './modules/ai/routes.js';
+import { AiService, type AiDeps } from './modules/ai/service.js';
 import { ActionStore } from './modules/actions/store.js';
 import { diskRoutes } from './modules/disk/routes.js';
 import { DiskService, type DiskDeps } from './modules/disk/service.js';
@@ -39,6 +41,8 @@ import { polled, WsHub } from './ws/hub.js';
 import { wsRoutes } from './ws/routes.js';
 
 export interface BuildOptions {
+  /** Provedor de IA injetável; testes não fazem chamadas externas. */
+  aiDeps?: AiDeps;
   /** Só o entrypoint real fornece o reinício; testes injetam um espião. */
   restart?: RestartDeps;
   logger?: FastifyServerOptions['logger'];
@@ -82,6 +86,7 @@ export async function buildApp(config: Config, token: string, opts: BuildOptions
   // Persistência e auditoria primeiro: os demais serviços dependem delas.
   const db = opts.db ?? openDb(path.join(config.dataDir, 'db.sqlite'));
   const audit = opts.audit ?? createAudit(db);
+  const ai = new AiService(new SettingsStore(db), config.dataDir, config.shell, audit, opts.aiDeps);
 
   const hub = new WsHub(app.log);
   const health = createHealth(config);
@@ -183,6 +188,7 @@ export async function buildApp(config: Config, token: string, opts: BuildOptions
     ...(opts.shellImport ? { shellImport: opts.shellImport } : {}),
   });
   notifyRoutes(app, { notifier });
+  aiRoutes(app, ai);
   repoRoutes(app, { repos, actions, runs, manager, processes, ports });
   panelRoutes(app, new PanelService(new SettingsStore(db), repos));
   lifecycleRoutes(app, manager, audit, opts.restart);
@@ -190,6 +196,7 @@ export async function buildApp(config: Config, token: string, opts: BuildOptions
   await registerStatic(app, config);
 
   app.addHook('onClose', async () => {
+    ai.close();
     supervisor.close(); // antes do shutdown: evita reinício automático durante o desligamento
     await manager.shutdown();
     hub.close();

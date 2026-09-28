@@ -88,6 +88,8 @@ Cada fase é entregável e testável sozinha. Marque `[x]` ao concluir (no mesmo
 
 ## Próximos passos (ideias, fora do plano original)
 
+- [x] Criar ações com IA: configuração Gemini/Anthropic, credenciais, rascunhos validados, revisão no editor e testes. Plano e limites de validação em [features/ia.md](features/ia.md); chamada com chave real ainda não verificada.
+
 - [x] Reiniciar apenas o macpit pelas Configurações, com confirmação, fechamento ordenado e reconexão automática.
 
 - [x] Salvar painéis por projeto e acessá-los pela aba Painéis, com busca, persistência e remoção do acesso salvo.

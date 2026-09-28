@@ -1,4 +1,5 @@
 export * from './schemas/actions.js';
+export * from './schemas/ai.js';
 export * from './schemas/disk.js';
 export * from './schemas/health.js';
 export * from './schemas/ports.js';

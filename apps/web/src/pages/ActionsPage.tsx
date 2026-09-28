@@ -6,6 +6,7 @@ import { PageTitle, RailEmpty, Workspace } from '../components/layout/Workspace'
 import { ActionCard } from '../features/actions/ActionCard';
 import { ActionDetail } from '../features/actions/ActionDetail';
 import { ActionEditor } from '../features/actions/ActionEditor';
+import { CreateActionWithAi } from '../features/ai/CreateActionWithAi';
 import { describeRun, runDurationMs } from '../features/actions/actionUtils';
 import { ImportShellDialog } from '../features/actions/ImportShellDialog';
 import { repoToPick, useRunAction } from '../features/actions/RunLauncher';
@@ -78,6 +79,7 @@ export function ActionsPage() {
   const [group, setGroup] = useState('all');
   const [startingId, setStartingId] = useState<string>();
   const [shellImport, setShellImport] = useState(false);
+  const [aiCreate, setAiCreate] = useState(false);
   const [notice, setNotice] = useState<{ ok: boolean; text: string }>();
 
   const selId = params.get('sel') ?? undefined;
@@ -271,7 +273,12 @@ export function ActionsPage() {
       right={right}
       mainClassName="flex flex-col gap-5 overflow-auto px-6 pb-6 pt-[18px]"
     >
-      <PageTitle title="Ações" sub="comandos salvos, executados com um clique num terminal ao vivo" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <PageTitle title="Ações" sub="comandos salvos, executados com um clique num terminal ao vivo" />
+        <button className="btn btn-primary" onClick={() => setAiCreate(true)}>
+          Criar com IA
+        </button>
+      </div>
       {notice && (
         <p role="status" className={`m-0 text-sm ${notice.ok ? 'text-accent' : 'text-danger'}`}>
           {notice.text}
@@ -324,6 +331,16 @@ export function ActionsPage() {
       ))}
 
       {shellImport && <ImportShellDialog existingNames={existingNames} onClose={() => setShellImport(false)} />}
+      {aiCreate && (
+        <CreateActionWithAi
+          groups={groupNames}
+          onClose={() => setAiCreate(false)}
+          onSaved={(a) => {
+            setAiCreate(false);
+            select(a.id);
+          }}
+        />
+      )}
       {editId && (editId === 'new' || editing) && (
         <ActionEditor
           key={editId}

@@ -15,6 +15,27 @@ Formato de erro em toda a API: `{ "error": string, "code"?: string }` (400 de va
 
 ## REST (`/api`)
 
+### IA — criação assistida
+
+Todas as rotas abaixo estão implementadas, exigem sessão/Host/Origin globais e retornam `Cache-Control: no-store`. Não criam execuções e não acrescentam canais WS.
+
+| Método | Rota             | Corpo / resposta                                                                                              |
+| ------ | ---------------- | ------------------------------------------------------------------------------------------------------------- |
+| GET    | `/ai/settings`   | `{ provider, model, hasApiKey, storage: session\|disk\|null }`; nunca retorna a chave                         |
+| PUT    | `/ai/settings`   | `{ provider: gemini\|anthropic, model }` → configuração pública; trocar provedor remove a chave anterior      |
+| PUT    | `/ai/credential` | `{ provider, apiKey, storage: session\|disk }` → configuração pública; provedor precisa coincidir com o ativo |
+| DELETE | `/ai/credential` | Remove chave em memória/disco → configuração pública                                                          |
+| POST   | `/ai/test`       | `{}` ou sem corpo → `{ ok: true, usage? }`; faz uma geração curta faturável, sem salvar/executar              |
+| POST   | `/ai/drafts`     | `{ configuration: { provider, model }, prompt, history?: [{ prompt, result }] }` → `{ result, usage? }`       |
+
+`result`: `{ status: needs_input|draft|unsupported, explanation, questions: string[], requirements: string[], warnings: string[], action }`. Só `draft` contém `action`; outros estados usam `null`. Só `needs_input` contém perguntas. Ação gerada: `{ name, command, group: string|null, icon: string|null, persistent, expectedPort: number|null, params: [{ name, label, type: text|repo, secret, default: string|null }] }`. Segredo/repositório não admite padrão. Sem env, cwd ou automações. Salvar exige revisão no editor e o `POST /actions` existente.
+
+Limites: prompt 8.000 caracteres; até seis rodadas anteriores; JSON do contexto até 32.000 caracteres; body HTTP até 192 KiB; uma chamada em andamento e dez por minuto (teste incluso); timeout 45 s. Uso opcional: `{ inputTokens, outputTokens }`; não é estimativa monetária. Cliente desconectado aborta a chamada; provedor pode cobrar trabalho já iniciado. Não há repetição automática.
+
+Erros específicos: 400 entrada inválida/`ai_secret_in_prompt`; 409 `ai_not_configured`, `ai_busy`, `ai_provider_changed` ou `ai_configuration_changed`; 422 `ai_auth`/`ai_configuration`; 429 `ai_rate_limit`/`ai_quota`; 502 `ai_network`/`ai_provider`/`ai_invalid_response`; 503 `ai_credential_storage`; 504 `ai_timeout`; 408 `ai_cancelled` quando ainda houver conexão para responder. Erros do provedor são normalizados sem corpo externo.
+
+### Demais recursos
+
 | Método         | Rota                           | Status | Descrição                                                                                                                                                                                                                                                                                                                                                                 |
 | -------------- | ------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GET            | `/health`                      | ✅     | `Health`: `{ ok, version, user, isRoot, hostname, platform, pid, uptimeSec, sampleIntervalMs }`                                                                                                                                                                                                                                                                           |
