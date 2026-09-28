@@ -2,6 +2,8 @@
 
 Status: **implementado**.
 
+O [painel por projeto](projetos.md) reúne ações, serviços, portas e histórico. Abra pelo nome na lista ou pelo botão **Abrir painel do projeto** nos detalhes.
+
 Informe a pasta onde ficam seus projetos (ex.: `~/github`). O macpit encontra os repositórios git dentro dela, reconhece quais são do GitHub e deixa você salvar **variáveis por repositório**. Numa ação, um parâmetro do tipo **repositório** permite escolher o repo na hora de executar. A ação então roda na pasta dele, e os demais parâmetros são preenchidos com as variáveis salvas desse repo.
 
 Exemplo: uma única ação "Túnel banco produção", `ssh -N -L 5432:{{DB_HOST}}:5432 {{BASTION}}`, serve para vários projetos. Cada repositório guarda o seu `DB_HOST` e o seu `BASTION`.

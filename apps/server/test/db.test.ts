@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { migrate, openDb } from '../src/db/index.js';
@@ -8,6 +9,20 @@ import { MIGRATIONS } from '../src/db/migrations.js';
 import { SettingsStore } from '../src/db/settings.js';
 
 describe('openDb', () => {
+  it('migra execuções existentes sem inventar vínculo com projeto', () => {
+    const db = new DatabaseSync(':memory:');
+    for (const sql of MIGRATIONS.slice(0, 5)) db.exec(sql);
+    db.exec(`PRAGMA user_version = 5;
+      INSERT INTO runs (id, action_name, command, cwd, status, started_at, log_path)
+      VALUES ('antiga', 'Ação antiga', 'echo ok', '/projeto', 'exited', 1, '/tmp/sintetico.log');`);
+    migrate(db);
+    expect(db.prepare('SELECT id, cwd, repo_path FROM runs').get()).toMatchObject({
+      id: 'antiga',
+      cwd: '/projeto',
+      repo_path: null,
+    });
+    db.close();
+  });
   it('cria arquivo 0600 e aplica migrations', () => {
     const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'bm-db-')), 'sub', 'db.sqlite');
     const db = openDb(file);
