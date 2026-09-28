@@ -120,6 +120,16 @@ export class ServiceSupervisor {
   start(action: Action, size: Pick<RunStart, 'cols' | 'rows'>, params: Record<string, string> = {}): Run {
     if (!action.persistent) throw new HttpError(400, 'a ação não é um serviço', 'not_service');
     const e = this.entry(action.id);
+    if (e.runId && (this.manager.isRunning(e.runId) || e.restartTimer)) {
+      const current = this.manager.get(e.runId);
+      if (current.repoPath !== this.manager.projectFor(action, params)) {
+        throw new HttpError(
+          409,
+          'este serviço já está ativo em outro projeto; pare-o antes de trocar',
+          'service_project_conflict',
+        );
+      }
+    }
     if (e.runId && this.manager.isRunning(e.runId)) return this.manager.get(e.runId);
     this.clearRestart(e);
     e.desired = 'running';

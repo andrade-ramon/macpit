@@ -33,6 +33,10 @@ Estado só em memória (perdido ao reiniciar):
 
 ## Tabelas
 
+O reinício do servidor acrescenta o tipo `restart` à auditoria existente (`target: "macpit"`, detalhe com `activeRuns` e `uid`). Não há migration nova; `kind` é texto. `instanceId`, estado de reinício e erros do controlador ficam apenas em memória e não alteram os dados salvos.
+
+**Painéis salvos:** `settings` usa a chave `panels.saved` com um array de até 200 objetos `{ id: string, name: string, repoPath: string, savedAt: number }`, validado pelo `SavedPanelsSchema`. Ausente = `[]`. O id é o identificador estável do repositório derivado do caminho, e `savedAt` é epoch em milissegundos. Há uma entrada por repositório; disponibilidade é calculada em memória usando a última varredura. Caminhos não encontrados continuam salvos. Não há migration nova: a tabela de configurações existente persiste esses dados entre reinícios.
+
 **disk_samples** ✅ (v1): `mount TEXT`, `ts INTEGER` (epoch ms), `used_bytes INTEGER`, `total_bytes INTEGER`. PK `(mount, ts)`, `WITHOUT ROWID`, índice em `ts`.
 Uma linha por volume a cada `MACPIT_DISK_SAMPLE_INTERVAL_MS` (padrão 5 min). Linhas com mais de 30 dias são apagadas a cada nova gravação.
 
@@ -55,6 +59,8 @@ O estado dos serviços (health, reinícios) fica só em memória.
 
 - `exited` = código 0; `failed` = código ≠ 0 ou morto por sinal que não foi pedido; `killed` = parado pelo usuário ou pelo desligamento do servidor; `interrupted` = estava `running` quando o servidor caiu (marcado no boot).
 - Retenção: as 50 execuções mais recentes por ação. As mais antigas são apagadas junto com o log.
+
+**Migration 6 — projeto da execução:** `runs.repo_path TEXT NULL`, com índice `runs_repo_started (repo_path, started_at DESC)`. Guarda o caminho do repositório resolvido pelo servidor no início da execução, mesmo com `cwd` próprio na ação. Não muda após edição/exclusão da ação. Execuções preexistentes e sem parâmetro `repo` permanecem com `NULL`; não há preenchimento por inferência. O campo público é `Run.repoPath`. Mover a pasta não transfere o histórico. A consulta do painel retorna até 50 recentes do projeto mais todas as ativas, dentro da retenção existente.
 
 **repo_vars** ✅ (v5): `repo_path TEXT`, `name TEXT`, `value TEXT`, `secret INTEGER 0/1`, PK `(repo_path, name)`. São as variáveis por repositório, chaveadas pelo caminho: renomear ou mover a pasta "perde" as variáveis. Os valores ficam **em texto** no banco (0600), inclusive os segredos. Segredos nunca voltam pela API. A lista de repositórios não é persistida (fica em memória).
 

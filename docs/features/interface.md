@@ -2,6 +2,8 @@
 
 Status: **implementado**.
 
+A navegação inclui a aba **Painéis** (`/panels`, atalho `g b`) para os [painéis salvos](paineis.md). O painel de um projeto oferece **Salvar painel**; abrir um salvo mantém a aba Painéis ativa e reutiliza o terminal do rodapé.
+
 A interface segue o design **Redesign Cockpit**, feito no Claude Design e exportado em `docs/design/`. A referência é `Redesign Cockpit.dc.html`. O arquivo `Atual (referência).dc.html` é o design anterior e fica só como histórico. A pasta não passa pelo Prettier nem pelo ESLint, para ficar igual ao exportado.
 
 Para ver o design com os dados de exemplo, sirva a pasta por HTTP (o `file://` não executa o template):

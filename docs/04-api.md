@@ -49,6 +49,29 @@ Formato de erro em toda a API: `{ "error": string, "code"?: string }` (400 de va
 | GET            | `/runs/:id/log`                | ✅     | log bruto (`text/plain`, com sequências ANSI)                                                                                                                                                                                                                                                                                                                             |
 | POST           | `/runs/:id/stop`               | ✅     | SIGTERM no grupo de processos, SIGKILL após 5 s → `Run` · 409 `not_running` · 404                                                                                                                                                                                                                                                                                         |
 
+## Painel por projeto (HTTP)
+
+- `GET /api/repos/:id/project` → `ProjectOverview`: `{ repo, actions: [{ action, busyElsewhere }], runs, ports, portsLimited, warnings }`. Exige sessão e as validações globais de Host/Origin. ID desconhecido retorna 404. `repo.vars` mantém segredos mascarados.
+- `actions` inclui templates com parâmetro de repositório e ações com histórico retido no projeto. `lastRun`, `runningCount` e `service` são contextualizados; `busyElsewhere` indica serviço ativo/em reinício em outro projeto.
+- `runs` contém até 50 recentes mais todas as ativas; `ports` só inclui processos relacionados às execuções vivas. Falha na coleta gera `warnings` e lista vazia de portas.
+- `Run` passa a incluir `repoPath: string | null` em todas as respostas REST e eventos existentes do terminal. Nulo para execuções anteriores à migration 6 ou sem parâmetro `repo`.
+- `POST /api/actions/:id/run`: serviço já ativo ou em reinício em outro projeto retorna 409 `service_project_conflict`.
+- `POST /api/actions/:id/stop`: aceita corpo opcional `{ repoPath: string }`. Quando informado, o projeto da execução atual deve coincidir; divergência retorna 409 `service_project_conflict`. Sem corpo mantém o comportamento anterior. O caminho é somente uma guarda de contexto, não é lido nem executado.
+
+## Painéis salvos (HTTP)
+
+- `GET /api/panels` → `Panel[]`: `{ id, name, repoPath, savedAt, available }`. `available` indica presença na última varredura; não exige que o repositório esteja marcado como importado.
+- `POST /api/panels` recebe `{ repoId: string }` → 200 `Panel`. Nome e caminho vêm do repositório encontrado pelo servidor; id desconhecido retorna 404. Idempotente por repositório. Limite de 200 painéis retorna 409 `panels_limit`; corpo inválido retorna 400.
+- `DELETE /api/panels/:id` → 204, inclusive quando já removido. Remove apenas o acesso salvo, sem afetar ações, execuções ou o projeto.
+
+Todas exigem sessão, Host e Origin válidos. Nenhuma executa ações ou aceita caminhos livres. A lista é persistida em `settings["panels.saved"]`; não há evento WebSocket novo.
+
+## Ciclo do servidor (HTTP)
+
+- `GET /api/server` → `ServerStatus`: `{ instanceId, pid, canRestart, restarting, activeRuns, error }`. `instanceId` muda a cada inicialização; `pid` pode permanecer igual.
+- `POST /api/server/restart` recebe estritamente `{ confirm: true }` → 202 `ServerStatus`, com `restarting: true`. A resposta é enviada antes do fechamento. 400 para confirmação ausente/falsa ou campos extras; 409 `already_restarting` para duplicatas; 503 `restart_unavailable` sem controlador compatível (inclui modo dev). Falha de preparação retorna erro antes de fechar o app.
+- Ambas exigem sessão e as validações globais de Host/Origin; POST cross-site é bloqueado. A operação é auditada como `restart`. Nenhum campo aceita comando, caminho, PID ou configuração do processo.
+
 ## WebSocket (`/ws`)
 
 Mensagens JSON (schemas em `packages/shared/src/schemas/ws.ts`). Nome de canal: `^[a-z0-9_:-]{1,128}$`.

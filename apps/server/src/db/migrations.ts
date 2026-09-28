@@ -82,4 +82,9 @@ export const MIGRATIONS: readonly string[] = [
     PRIMARY KEY (repo_path, name)
   );
   `,
+  // 6 — vínculo imutável de cada execução com o projeto escolhido
+  `
+  ALTER TABLE runs ADD COLUMN repo_path TEXT;
+  CREATE INDEX runs_repo_started ON runs (repo_path, started_at DESC);
+  `,
 ];

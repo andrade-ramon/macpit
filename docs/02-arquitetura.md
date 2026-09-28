@@ -30,6 +30,8 @@ apps/server (Fastify, 127.0.0.1:7777)
   Ao desligar o servidor, runs ativas recebem SIGTERM (configurável).
 - **Produção**: o server serve o build estático do web (`apps/web/dist`) — um processo só, uma porta.
 
+O [reinício pelas Configurações](features/reinicio.md) usa um controlador de ciclo de vida injetado pelo entrypoint: responde à solicitação, fecha o app e substitui o processo via `process.execve`, preservando o vínculo com o LaunchAgent. Ver [ADR 0004](adr/0004-reinicio-processo.md). O botão não executa build.
+
 ## Canais WebSocket
 
 `system`, `processes`, `ports`, `disk`, `run:<id>`, `tail:<id>` — ver [04-api.md](04-api.md).
