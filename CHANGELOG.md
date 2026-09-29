@@ -6,6 +6,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ### Changed
 
+- **Criar com IA:** esclarecimentos agora têm um campo por pergunta, etapas com Voltar/Próxima, revisão e edição das respostas antes do envio conjunto. Navegação não chama o provedor; respostas são preservadas em falhas e cancelamento.
+
 - **Painel por projeto:** ações e serviços organizados em cards numa grade responsiva, com botões na base de cada bloco.
 
 - **Painel por projeto:** acesso pela página Repositórios, ações e serviços contextualizados, portas das execuções ativas e seus filhos, histórico com terminal/log no rodapé e atualização periódica. Migration 6 registra o repositório de cada nova execução; serviços ativos em outro projeto são bloqueados, inclusive durante reinício pendente, e a parada confere o projeto esperado. Inclui testes de migração, API, isolamento e E2E no Chrome.
@@ -17,6 +19,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
   - exportações `bash-monitor/actions` podem ser importadas; o LaunchAgent `com.bash-monitor.server` é removido ao instalar o novo.
 
 ### Added
+
+- **Criar ações com IA:** configuração de Gemini/Anthropic e API key em memória ou arquivo 0600; geração com esclarecimentos/refinamento, validação de templates e revisão no editor existente. Criar não executa, automações ficam desligadas e credenciais não vão para o ambiente dos comandos. Inclui limites, cancelamento, auditoria sem conteúdo, testes de segurança/API e E2E com respostas simuladas.
 
 - **Reiniciar macpit:** botão nas Configurações com confirmação e contagem de execuções ativas, fechamento ordenado, recarga do processo pelo mesmo Node e reconexão automática por `instanceId`. Preserva dados e sessão; não reinicia o macOS. Rotas `/api/server` e `/api/server/restart`, auditoria e E2E de reinício real do servidor de teste.
 

@@ -7,6 +7,7 @@ Diretório de dados padrão: `~/.macpit/` (quando root: `/var/root/.macpit`, ou 
 ```
 ~/.macpit/
   token            # ✅ 0600 — token de acesso (64 hex)
+  ai-credential.json # opcional, 0600 — chave do provedor de IA (texto, sem criptografia)
   db.sqlite        # ✅ 0600 — node:sqlite, WAL (+ db.sqlite-wal / -shm)
   runs/<runId>.log # ✅ 0600 — saída bruta de cada execução (com ANSI), até 20 MB
   audit.log        # legado (fases 2–4); a auditoria agora vai para a tabela audit_log
@@ -18,6 +19,14 @@ Estado só em memória (perdido ao reiniciar):
 - tails ativos;
 - cache do explorador de disco (10 min);
 - buffer de 256 KB das execuções em andamento.
+
+## IA
+
+Sem migration nova. `settings` usa a chave `ai` com `{ provider: "gemini"|"anthropic", model }`, validada pelo catálogo de shared. Ausente = Gemini / `gemini-3.5-flash`. Trocar modelo preserva a credencial; trocar provedor a remove.
+
+`ai-credential.json` contém `{ provider, apiKey, storage: "disk" }` somente se a pessoa escolheu lembrar a chave. Diretório deve ser `0700`, arquivo regular `0600`, pertencente ao usuário do processo, sem links simbólicos ou hardlinks; leitura limitada a 4 KiB. Escrita por arquivo temporário exclusivo `.ai-credential-<uuid>.tmp`, fsync e rename. Arquivo temporário é removido após a operação; uma queda abrupta pode deixá-lo no diretório protegido. O modo `session` remove o arquivo anterior e mantém a chave em memória até o servidor fechar. Remover chave elimina os dois modos; não apaga possíveis backups externos. Erro de leitura/permissões é explícito e não expõe o conteúdo.
+
+Rascunhos e conversa ficam apenas na memória da interface. A ação final usa a tabela `actions` existente; não há histórico de prompts. `audit_log.kind = "ai"` registra configuração/remoção, provedor/modelo, duração, resultado e tokens quando disponíveis. Não inclui chave, prompt, resposta, comando ou valores de parâmetros.
 
 ## Migrations
 
