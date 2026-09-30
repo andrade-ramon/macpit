@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { isValidElement, type ReactNode } from 'react';
 import { useLayout } from './LayoutContext';
 
 interface Props {
@@ -12,35 +12,27 @@ interface Props {
   label: string;
 }
 
-/**
- * Área de trabalho em até 3 colunas separadas por 1px (o fundo da grade é a cor da linha).
- * Em telas ≥ 1500px as laterais ficam sempre visíveis; abaixo disso, uma por vez pelos
- * botões "◧ Filtros" / "Detalhes ◨" do cabeçalho.
- */
+/** Conteúdo com filtros sob demanda e detalhes contextuais ao lado ou abaixo. */
 export function Workspace({ left, right, mainClassName = '', children, label }: Props) {
   const { wide, showLeft, showRight } = useLayout();
   const hasLeft = showLeft && left !== undefined;
-  const hasRight = showRight && right !== undefined;
-  const cols = wide
-    ? `${left !== undefined ? 'minmax(280px,320px) ' : ''}minmax(0,1fr)${right !== undefined ? ' minmax(380px,460px)' : ''}`
-    : hasLeft
-      ? 'minmax(260px,300px) minmax(0,1fr)'
-      : hasRight
-        ? 'minmax(0,1fr) minmax(320px,400px)'
-        : 'minmax(0,1fr)';
+  const emptyRight = isValidElement(right) && right.type === RailEmpty;
+  const hasRight = showRight && right !== undefined && !emptyRight;
 
   return (
-    <div className="grid min-h-0 flex-1 gap-px bg-line" style={{ gridTemplateColumns: cols }}>
-      {hasLeft && (
-        <aside aria-label={`${label} · filtros`} className="flex min-h-0 flex-col gap-5 overflow-auto bg-bg p-5">
-          {left}
-        </aside>
-      )}
-      <main aria-label={label} className={`min-h-0 min-w-0 bg-bg ${mainClassName}`}>
-        {children}
-      </main>
+    <div className={`workspace ${hasRight ? 'workspace-with-detail' : ''} ${wide ? 'workspace-wide' : ''}`}>
+      <div className="workspace-content">
+        {hasLeft && (
+          <aside aria-label={`${label} · filtros`} className="workspace-filters">
+            {left}
+          </aside>
+        )}
+        <main aria-label={label} className={`min-h-0 min-w-0 bg-bg ${mainClassName}`}>
+          {children}
+        </main>
+      </div>
       {hasRight && (
-        <aside aria-label={`${label} · detalhes`} className="flex min-h-0 flex-col gap-[18px] overflow-auto bg-bg p-5">
+        <aside aria-label={`${label} · detalhes`} className="workspace-detail">
           {right}
         </aside>
       )}
@@ -51,9 +43,9 @@ export function Workspace({ left, right, mainClassName = '', children, label }: 
 /** Cabeçalho de página: título + subtítulo (e, opcionalmente, controles à direita). */
 export function PageTitle({ title, sub, children }: { title: string; sub?: ReactNode; children?: ReactNode }) {
   return (
-    <div className="flex items-center gap-3.5">
+    <div className="page-title">
       <h1 className="m-0 whitespace-nowrap text-[22px] font-semibold tracking-[-0.01em]">{title}</h1>
-      {sub !== undefined && <span className="whitespace-nowrap text-[13px] text-text3">{sub}</span>}
+      {sub !== undefined && <span className="text-[13px] text-text2">{sub}</span>}
       {children}
     </div>
   );

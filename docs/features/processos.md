@@ -46,7 +46,8 @@ Não é possível ler o stdout de um processo arbitrário que já está rodando.
 
 - `/processes`: tabela virtualizada (`@tanstack/react-virtual`) com busca por nome, comando ou PID exato, filtro por usuário ("Meus" primeiro) e ordenação clicando no cabeçalho.
   - O modo **Árvore** ordena entre irmãos. Com busca ativa, mostra também os ancestrais, esmaecidos.
-  - CPU ≥ 30% fica amarela e ≥ 80% vermelha; processos do root aparecem em vermelho; o próprio servidor ganha a marca `macpit`.
+  - A lista mostra PID, nome, CPU (%) e memória. Comando, usuário, estado e tempo ficam nos detalhes; ordenação por todos os campos continua disponível em Filtros. Busca fica sempre no conteúdo principal.
+  - CPU ≥ 30% fica amarela e ≥ 80% vermelha; o próprio servidor ganha a marca `este painel`. Em listas estreitas, Encerrar fica nos detalhes para preservar a leitura das métricas.
 - `/processes?pid=N` abre o painel lateral, que pode ser acessado por link direto (a página de Portas vai usar isso). O painel tem:
   - dados do processo e a linha de comando completa;
   - botões de sinal com `ConfirmDialog`;

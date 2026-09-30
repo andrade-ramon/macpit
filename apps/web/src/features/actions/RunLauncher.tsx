@@ -1,6 +1,7 @@
 import type { Action, Repo } from '@macpit/shared';
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
+import { useLayout } from '../../components/layout/LayoutContext';
 import { Modal } from '../../components/ui/Modal';
 import { useRepos } from '../repos/useRepos';
 import { useDock } from '../terminal/DockContext';
@@ -27,6 +28,7 @@ const Ctx = createContext<Launch | null>(null);
  */
 export function RunLauncherProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
+  const { showRail } = useLayout();
   const dock = useDock();
   const start = useStartRun();
   const [picking, setPicking] = useState<Action>();
@@ -37,6 +39,7 @@ export function RunLauncherProvider({ children }: { children: ReactNode }) {
       if (!param || !repo.imported) return;
       if (missingAfterRepo(a, repo)) {
         setPicking(undefined);
+        showRail('right');
         return navigate(`/actions?sel=${a.id}&repo=${repo.id}`);
       }
       const values = applyRepoVars(a.params, { ...initialParamValues(a.params), [param.name]: repo.id }, repo);
@@ -50,7 +53,7 @@ export function RunLauncherProvider({ children }: { children: ReactNode }) {
         },
       );
     },
-    [navigate, start, dock],
+    [navigate, start, dock, showRail],
   );
 
   const launch = useCallback<Launch>(
@@ -59,10 +62,13 @@ export function RunLauncherProvider({ children }: { children: ReactNode }) {
       start.reset();
       if (repo) return runWithRepo(a, repo);
       if (repoToPick(a)) return setPicking(a);
-      if (a.params.length) return navigate(`/actions?sel=${a.id}`);
+      if (a.params.length) {
+        showRail('right');
+        return navigate(`/actions?sel=${a.id}`);
+      }
       start.mutate({ actionId: a.id }, { onSuccess: (r) => dock.openRun(r.id) });
     },
-    [start, navigate, dock, runWithRepo],
+    [start, navigate, dock, runWithRepo, showRail],
   );
 
   return (

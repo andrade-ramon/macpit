@@ -123,6 +123,7 @@ test('painel de projeto: vínculo, serviços, portas, histórico e formulário n
   });
   await login(page);
   await page.goto('/repos');
+  await page.getByRole('button', { name: '◧ Filtros', exact: true }).click();
   await page.getByRole('button', { name: 'Só GitHub', exact: true }).click();
   await page.getByRole('button', { name: 'Abrir projeto rascunho', exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`project=${rascunho.id}`));
@@ -139,6 +140,7 @@ test('painel de projeto: vínculo, serviços, portas, histórico e formulário n
   ).toBeVisible();
   await page.reload();
   await expect(svc.getByRole('button', { name: 'Parar serviço' })).toBeVisible();
+  await page.getByRole('button', { name: '◧ Filtros', exact: true }).click();
   await page.setViewportSize({ width: 1200, height: 900 });
   await expect(svc.getByRole('button', { name: 'Parar serviço' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -294,6 +296,7 @@ test('processos: busca pela URL e estado vazio', async ({ page }) => {
 test('repositórios: pasta de projetos, variáveis do repo e ação que escolhe o repo', async ({ page, request }) => {
   await login(page);
   await page.goto('/repos');
+  await page.getByRole('button', { name: '◧ Filtros', exact: true }).click();
   await page.getByLabel('Nova pasta de projetos').fill(`${E2E_DATA_DIR}/projetos`);
   await page.getByRole('button', { name: '+ Pasta' }).click();
   await page.getByRole('button', { name: 'Salvar e procurar' }).click();
@@ -345,6 +348,7 @@ test('repositórios: pasta de projetos, variáveis do repo e ação que escolhe 
   await page.goto('/repos');
   await page.getByLabel('Importar acme/loja').click();
   await expect(page.getByLabel('Importar acme/loja')).not.toBeChecked();
+  await page.getByRole('button', { name: '◧ Filtros', exact: true }).click();
   await expect(page.getByText('Repositórios novos entram desmarcados.')).toBeVisible();
   await page.keyboard.press('ControlOrMeta+k');
   await page.getByLabel('Buscar comandos').fill('loja');
