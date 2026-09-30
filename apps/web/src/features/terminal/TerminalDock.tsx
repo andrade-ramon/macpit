@@ -93,7 +93,11 @@ export function TerminalDock() {
     <section
       aria-label="Terminal"
       className="flex shrink-0 flex-col border-t border-line bg-panel"
-      style={{ height: dock.open ? dock.height : COLLAPSED }}
+      style={{
+        height: dock.open ? dock.height : undefined,
+        minHeight: COLLAPSED,
+        maxHeight: dock.open ? '65vh' : undefined,
+      }}
     >
       <div
         onMouseDown={(e) => {
@@ -105,16 +109,21 @@ export function TerminalDock() {
       >
         <span className="h-[3px] w-12 rounded-full bg-line2" />
       </div>
-      <div className="flex h-11 shrink-0 items-center gap-2 pl-4 pr-3">
+      <div className="terminal-toolbar">
         <button
           onClick={() => dock.setOpen(!dock.open)}
           aria-label={dock.open ? 'Recolher terminal' : 'Expandir terminal'}
-          className="btn btn-ghost h-8 w-8 p-0 text-xs"
+          aria-expanded={dock.open}
+          className="btn btn-ghost h-8 text-xs"
         >
-          {dock.open ? '▾' : '▴'}
+          {dock.open ? '▾ Recolher' : '▴ Abrir'}
         </button>
         <span className="eyebrow mr-1.5">Terminal</span>
-        <div className="flex min-w-0 flex-1 gap-0.5 overflow-hidden" role="tablist" aria-label="Execuções abertas">
+        <div
+          className="terminal-tabs flex min-w-0 flex-1 gap-0.5 overflow-auto"
+          role="tablist"
+          aria-label="Execuções abertas"
+        >
           {dock.runs.map((id) => {
             const r = id === live?.id ? live : runs.get(id);
             const active = id === activeId;
@@ -208,7 +217,7 @@ export function TerminalDock() {
         )}
       </div>
       {dock.open && (
-        <div className="mx-3 mb-3 flex min-h-0 flex-1 flex-col overflow-hidden rounded-[10px] border border-line bg-black">
+        <div className="mb-3 flex min-h-0 w-[calc(100%-24px)] max-w-[1680px] flex-1 flex-col self-center overflow-hidden rounded-[10px] border border-line bg-black">
           {activeId ? (
             <>
               <div className="flex h-[30px] shrink-0 items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap border-b border-[#1a1d24] px-3 font-mono text-[11.5px] text-term-dim">

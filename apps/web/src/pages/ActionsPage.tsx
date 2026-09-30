@@ -161,9 +161,6 @@ export function ActionsPage() {
 
   const left = (
     <>
-      <button onClick={() => setParam({ edit: 'new' })} className="btn btn-xl btn-primary font-bold">
-        + Nova ação
-      </button>
       <div>
         <div className="eyebrow mb-2">Grupos</div>
         <div className="flex flex-col gap-0.5">
@@ -275,9 +272,14 @@ export function ActionsPage() {
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PageTitle title="Ações" sub="comandos salvos, executados com um clique num terminal ao vivo" />
-        <button className="btn btn-primary" onClick={() => setAiCreate(true)}>
-          Criar com IA
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => setParam({ edit: 'new' })} className="btn btn-primary">
+            + Nova ação
+          </button>
+          <button className="btn" onClick={() => setAiCreate(true)}>
+            Criar com IA
+          </button>
+        </div>
       </div>
       {notice && (
         <p role="status" className={`m-0 text-sm ${notice.ok ? 'text-accent' : 'text-danger'}`}>

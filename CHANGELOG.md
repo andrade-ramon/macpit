@@ -6,6 +6,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ### Changed
 
+- **Interface Contexto:** navegação lateral com nomes sempre visíveis, filtros sob demanda, detalhes ao lado a partir de 1200px e abaixo em telas menores, área de trabalho limitada a 1680px para ultrawide. Processos usa lista essencial com busca no conteúdo e ordenação avançada nos filtros; Portas mantém busca visível. Nova ação fica no cabeçalho; sinais adicionais de processos ficam em Mais sinais. Superfícies mais discretas, texto secundário com mais contraste e terminal com controle rotulado, recolhido por padrão quando não há preferência salva.
+
 - **Criar com IA:** esclarecimentos agora têm um campo por pergunta, etapas com Voltar/Próxima, revisão e edição das respostas antes do envio conjunto. Navegação não chama o provedor; respostas são preservadas em falhas e cancelamento.
 
 - **Painel por projeto:** ações e serviços organizados em cards numa grade responsiva, com botões na base de cada bloco.

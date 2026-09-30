@@ -16,7 +16,7 @@ export default defineConfig({
   use: {
     baseURL: `http://127.0.0.1:${E2E_PORT}`,
     channel: 'chrome',
-    // largura em que o design mostra as três colunas (filtros · conteúdo · detalhes)
+    // conteúdo e detalhes lado a lado; testes de interface também cobrem normal e ultrawide
     viewport: { width: 1600, height: 1000 },
     headless: true,
     trace: 'retain-on-failure',

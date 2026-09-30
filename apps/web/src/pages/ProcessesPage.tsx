@@ -128,12 +128,6 @@ export function ProcessesPage() {
   const left = (
     <>
       <div className="flex flex-col gap-2.5">
-        <SearchInput
-          value={query}
-          onChange={setQuery}
-          placeholder="Nome, comando ou PID  ( / )"
-          label="Buscar processos"
-        />
         <div className="flex flex-wrap gap-1.5">
           <Chip active={user === ''} onClick={() => setUser('')}>
             Todos
@@ -154,6 +148,24 @@ export function ProcessesPage() {
       </div>
       <div>
         <div className="eyebrow mb-2">Resumo</div>
+        <label className="mb-3 flex flex-wrap items-center gap-2 text-sm text-text2">
+          Ordenar por
+          <select
+            className="input"
+            aria-label="Ordenar processos"
+            value={sortKey}
+            onChange={(e) => onSort(e.target.value as SortKey)}
+          >
+            {(Object.keys(SORT_LABEL) as SortKey[]).map((key) => (
+              <option key={key} value={key}>
+                {SORT_LABEL[key]}
+              </option>
+            ))}
+          </select>
+          <button className="btn btn-sm" onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}>
+            {sortDir === 'asc' ? 'Crescente ↑' : 'Decrescente ↓'}
+          </button>
+        </label>
         <div className="grid grid-cols-2 gap-2">
           <div className="tile p-3">
             <div className="text-xs text-text3">Processos</div>
@@ -226,6 +238,15 @@ export function ProcessesPage() {
         <PageTitle title="Processos" sub={`${count} · ordenado por ${SORT_LABEL[sortKey]}`}>
           <span className="ml-auto text-xs text-text3">clique numa linha para ver detalhes e encerrar</span>
         </PageTitle>
+        <p className="mb-4 mt-2 text-sm text-text2">
+          Veja o que está rodando e quanto consome. Selecione para ver comando, usuário e estado.
+        </p>
+        <SearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder="Buscar por nome, comando ou PID…"
+          label="Buscar processos"
+        />
       </div>
       {error && <p className="mx-6 text-danger">Falha ao carregar processos: {error.message}</p>}
       {!data && !error && <p className="mx-6 text-text3">Carregando processos…</p>}

@@ -85,39 +85,44 @@ export function ProcessDetailPanel({ pid, selfPid, result, onClose, onSelect, on
 
       {p && !gone && (
         <>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-wrap items-start gap-2">
             <button
               onClick={() => onAskKill(p, 'TERM')}
               disabled={protectedPid}
               title="SIGTERM — pede para o processo terminar de forma limpa"
-              className="btn btn-lg btn-danger-outline"
+              className="btn btn-danger"
             >
               Encerrar <span className="font-mono text-[11px] font-normal opacity-70">TERM</span>
             </button>
-            <button
-              onClick={() => onAskKill(p, 'KILL')}
-              disabled={protectedPid}
-              title="SIGKILL — mata na hora, sem chance de limpeza"
-              className="btn btn-lg btn-danger-solid"
-            >
-              Forçar <span className="font-mono text-[11px] font-medium opacity-70">KILL</span>
-            </button>
-            <button
-              onClick={() => onAskKill(p, 'INT')}
-              disabled={protectedPid}
-              title="SIGINT — equivalente a Ctrl+C"
-              className="btn btn-md rounded-[11px]"
-            >
-              Interromper <span className="font-mono text-[11px] opacity-60">INT</span>
-            </button>
-            <button
-              onClick={() => onAskKill(p, 'HUP')}
-              disabled={protectedPid}
-              title="SIGHUP — muitos daemons recarregam a configuração"
-              className="btn btn-md rounded-[11px]"
-            >
-              Recarregar <span className="font-mono text-[11px] opacity-60">HUP</span>
-            </button>
+            <details className="min-w-0">
+              <summary className="cursor-pointer px-2 py-2 text-sm text-text2">Mais sinais</summary>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <button
+                  onClick={() => onAskKill(p, 'KILL')}
+                  disabled={protectedPid}
+                  title="SIGKILL — mata na hora, sem chance de limpeza"
+                  className="btn btn-danger"
+                >
+                  Forçar <span className="font-mono text-[11px] font-medium opacity-70">KILL</span>
+                </button>
+                <button
+                  onClick={() => onAskKill(p, 'INT')}
+                  disabled={protectedPid}
+                  title="SIGINT — equivalente a Ctrl+C"
+                  className="btn btn-md rounded-[11px]"
+                >
+                  Interromper <span className="font-mono text-[11px] opacity-60">INT</span>
+                </button>
+                <button
+                  onClick={() => onAskKill(p, 'HUP')}
+                  disabled={protectedPid}
+                  title="SIGHUP — muitos daemons recarregam a configuração"
+                  className="btn btn-md rounded-[11px]"
+                >
+                  Recarregar <span className="font-mono text-[11px] opacity-60">HUP</span>
+                </button>
+              </div>
+            </details>
           </div>
           {protectedPid && (
             <p className="m-0 text-[12.5px] text-text3">
@@ -133,7 +138,7 @@ export function ProcessDetailPanel({ pid, selfPid, result, onClose, onSelect, on
             </div>
           )}
 
-          <dl className="tile m-0 grid grid-cols-3 gap-3 p-3.5">
+          <dl className="m-0 grid grid-cols-3 gap-3 border-y border-line py-3.5">
             <div>
               <dt className="text-[11.5px] text-text3">CPU</dt>
               <dd className="m-0 font-mono text-[15px] font-medium" style={{ color: cpuColor(p.cpuPct) }}>

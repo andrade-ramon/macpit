@@ -14,7 +14,7 @@ function load(): Persisted {
   const fallback: Persisted = {
     runs: [],
     active: null,
-    open: true,
+    open: false,
     height: typeof window === 'undefined' ? 280 : Math.min(280, Math.round(window.innerHeight * 0.4)),
   };
   try {

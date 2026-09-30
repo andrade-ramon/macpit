@@ -1,10 +1,8 @@
 import type { ProcessInfo } from '@macpit/shared';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useRef, useState } from 'react';
-import { fmtBytes, fmtDur, fmtNum } from '../../lib/format';
-import { stateLabel, type Row, type SortDir, type SortKey } from './processRows';
-
-const COLS = '76px minmax(200px,1.4fr) 110px 84px 96px 110px 90px minmax(220px,2fr) 120px';
+import { fmtBytes, fmtNum } from '../../lib/format';
+import { type Row, type SortDir, type SortKey } from './processRows';
 
 export const cpuColor = (c: number) => (c >= 80 ? 'var(--danger)' : c >= 30 ? 'var(--warn)' : 'var(--text)');
 export const stateColor = (s: string) =>
@@ -48,7 +46,7 @@ export function ProcessTable({ rows, sortKey, sortDir, onSort, selectedPid, onSe
   const head = (key: SortKey, label: string, right = false) => (
     <button
       onClick={() => onSort(key)}
-      className={`border-0 bg-transparent p-0 font-[inherit] uppercase ${right ? 'text-right' : 'text-left'}`}
+      className={`border-0 bg-transparent p-0 font-[inherit] ${right ? 'text-right' : 'text-left'}`}
       style={{ color: sortKey === key ? 'var(--accent)' : 'var(--text3)', letterSpacing: 'inherit' }}
     >
       {label}
@@ -61,19 +59,15 @@ export function ProcessTable({ rows, sortKey, sortDir, onSort, selectedPid, onSe
       ref={scrollRef}
       role="grid"
       aria-rowcount={rows.length}
-      className="mx-6 mb-5 min-h-0 flex-1 overflow-auto rounded-[14px] border border-line bg-panel"
+      className="process-table mx-6 mb-5 min-h-0 flex-1 overflow-auto"
     >
-      <div className="min-w-[1180px]">
-        <div role="row" className="table-head grid items-center gap-3" style={{ gridTemplateColumns: COLS }}>
+      <div className="min-w-[330px]">
+        <div role="row" className="process-columns table-head grid items-center gap-3">
           {head('pid', 'PID', true)}
           {head('name', 'Nome')}
-          <span>Usuário</span>
-          {head('cpuPct', 'CPU', true)}
+          {head('cpuPct', 'CPU %', true)}
           {head('rssBytes', 'Memória', true)}
-          <span>Estado</span>
-          <span className="text-right">Tempo</span>
-          <span>Comando</span>
-          <span />
+          <span className="process-row-action" />
         </div>
         <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
           {virtualizer.getVirtualItems().map((vi) => {
@@ -85,9 +79,8 @@ export function ProcessTable({ rows, sortKey, sortDir, onSort, selectedPid, onSe
                 role="row"
                 aria-selected={selected}
                 onClick={() => onSelect(p.pid)}
-                className={`data-row absolute inset-x-0 grid items-center gap-3 ${dimmed ? 'opacity-40' : ''}`}
+                className={`process-columns data-row absolute inset-x-0 grid items-center gap-3 ${dimmed ? 'opacity-40' : ''}`}
                 style={{
-                  gridTemplateColumns: COLS,
                   height: rowH,
                   transform: `translateY(${vi.start}px)`,
                   background: selected ? 'var(--accent-soft)' : undefined,
@@ -95,7 +88,16 @@ export function ProcessTable({ rows, sortKey, sortDir, onSort, selectedPid, onSe
                 }}
               >
                 <span className="text-right font-mono text-[12.5px] text-text3">{p.pid}</span>
-                <span className="truncate font-medium" style={{ paddingLeft: depth * 16 }} title={p.path}>
+                <button
+                  className="truncate border-0 bg-transparent p-0 text-left font-medium"
+                  style={{ paddingLeft: depth * 16 }}
+                  title={p.path}
+                  aria-label={`Ver detalhes de ${p.name}, PID ${p.pid}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelect(p.pid);
+                  }}
+                >
                   {depth > 0 && <span className="text-text3">└ </span>}
                   {p.name}
                   {p.pid === selfPid && (
@@ -103,30 +105,12 @@ export function ProcessTable({ rows, sortKey, sortDir, onSort, selectedPid, onSe
                       este painel
                     </span>
                   )}
-                </span>
-                <span
-                  className="truncate text-[13px]"
-                  style={{ color: p.user === 'root' ? 'var(--danger)' : 'var(--text2)' }}
-                >
-                  {p.user}
-                </span>
+                </button>
                 <span className="text-right font-mono text-[13px] font-medium" style={{ color: cpuColor(p.cpuPct) }}>
                   {fmtNum(p.cpuPct)}
                 </span>
                 <span className="text-right font-mono text-[13px] text-text2">{fmtBytes(p.rssBytes)}</span>
-                <span
-                  className="flex items-center gap-1.5 text-[13px]"
-                  style={{ color: stateColor(p.state) }}
-                  title={p.state}
-                >
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: stateColor(p.state) }} />
-                  {stateLabel(p.state)}
-                </span>
-                <span className="text-right font-mono text-[12.5px] text-text3">{fmtDur(p.elapsedSec)}</span>
-                <span className="truncate font-mono text-xs text-text3" title={p.command}>
-                  {p.command}
-                </span>
-                <span className="flex justify-end gap-1.5">
+                <span className="process-row-action flex justify-end gap-1.5">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();

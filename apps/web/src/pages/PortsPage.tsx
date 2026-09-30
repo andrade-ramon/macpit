@@ -123,7 +123,6 @@ export function PortsPage() {
 
   const left = (
     <>
-      <SearchInput value={q} onChange={setQuery} placeholder="Porta, processo ou comando" label="Buscar portas" />
       <div>
         <div className="eyebrow mb-2">Escopo</div>
         <div className="flex flex-col gap-1.5">
@@ -203,6 +202,14 @@ export function PortsPage() {
               : undefined
           }
         />
+        <div className="mt-4">
+          <SearchInput
+            value={q}
+            onChange={setQuery}
+            placeholder="Buscar por porta, processo ou comando…"
+            label="Buscar portas"
+          />
+        </div>
       </div>
       {message && (
         <p role="status" className={`mx-6 mb-2 mt-0 text-sm ${message.ok ? 'text-accent' : 'text-danger'}`}>
