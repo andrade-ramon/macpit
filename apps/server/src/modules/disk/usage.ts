@@ -82,6 +82,10 @@ export class DiskUsageService {
     return job;
   }
 
+  invalidate(): void {
+    this.cache.clear();
+  }
+
   private async compute(dir: string): Promise<DiskUsage> {
     const start = this.deps.now();
     let out: { stdout: string; partial: boolean };

@@ -36,6 +36,20 @@ Erros específicos: 400 entrada inválida/`ai_secret_in_prompt`; 409 `ai_not_con
 
 ### Demais recursos
 
+#### Limpeza assistida do disco
+
+Rotas autenticadas com Host/Origin globais; respostas da análise/execução usam `Cache-Control: no-store`. Contratos em `schemas/cleanup.ts`; nenhum canal WS novo.
+
+| Método | Rota                    | Entrada / resposta                                                                                                                                        |
+| ------ | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| POST   | `/disk/cleanup/scan`    | `{ path, maxFiles?: 1..20000, minFileBytes?: 0..1000000000000 }` (padrões 10000 e 0) → `CleanupPlan`: `{ id, root, expiresAt, files, warnings, partial }` |
+| POST   | `/disk/cleanup/open`    | `{ planId, fileId }` → 204; revela somente arquivo revalidado da prévia no Finder                                                                         |
+| POST   | `/disk/cleanup/execute` | `{ planId, fileIds, confirm: true }` → `CleanupResult`: `{ items, movedBytes }`                                                                           |
+
+Cada arquivo: `{ id, path, bytes, modifiedAt, category: cache|manual, reason, impact }`. Cada resultado: `{ id, path, status: moved|skipped|failed, message }`. Caminhos de execução não são aceitos do cliente. IDs repetidos, seleção vazia/mais de 500 e confirmação ausente/falsa retornam 400. Prévia vencida/consumida: 409 `cleanup_expired`; seleção estranha: 400 `cleanup_selection`; raiz inválida/protegida: 400 `cleanup_path`; root: 403 `cleanup_root`; concorrência: 429/409 `cleanup_busy`; análise cancelada: 499 `cleanup_cancelled` se ainda for possível responder. Falhas por arquivo aparecem no resultado 200, sem serem tratadas como sucesso. Uma execução consome a prévia antes da primeira operação assíncrona.
+
+Limites e recuperação: [Disco](features/disco.md#limpeza-assistida).
+
 | Método         | Rota                           | Status | Descrição                                                                                                                                                                                                                                                                                                                                                                 |
 | -------------- | ------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GET            | `/health`                      | ✅     | `Health`: `{ ok, version, user, isRoot, hostname, platform, pid, uptimeSec, sampleIntervalMs }`                                                                                                                                                                                                                                                                           |

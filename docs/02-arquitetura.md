@@ -35,6 +35,8 @@ O [reinício pelas Configurações](features/reinicio.md) usa um controlador de 
 
 O [módulo de IA](features/ia.md) usa HTTP sem streaming: shared define contratos, adaptadores fazem chamadas HTTPS com destinos fixos e o serviço valida a resposta antes da revisão no editor. `AiService` não recebe o executor. Credenciais ficam separadas de configurações públicas e nunca entram no ambiente dos ptys. Ver [ADR 0005](adr/0005-criacao-acoes-ia.md).
 
+A [limpeza assistida do disco](features/disco.md#limpeza-assistida) usa regras locais, prévias de uso único em memória e APIs de arquivos para conferir/isolar a seleção. O Finder recebe o caminho em argv por `execFile`, com script fixo, e move à Lixeira. Não há shell, IA ou execução de ação salva nesse fluxo. Ver [ADR 0006](adr/0006-limpeza-assistida.md).
+
 ## Canais WebSocket
 
 `system`, `processes`, `ports`, `disk`, `run:<id>`, `tail:<id>` — ver [04-api.md](04-api.md).

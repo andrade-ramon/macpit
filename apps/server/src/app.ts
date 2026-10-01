@@ -19,6 +19,7 @@ import { aiRoutes } from './modules/ai/routes.js';
 import { AiService, type AiDeps } from './modules/ai/service.js';
 import { ActionStore } from './modules/actions/store.js';
 import { diskRoutes } from './modules/disk/routes.js';
+import { CleanupService, type CleanupDeps } from './modules/disk/cleanup.js';
 import { DiskService, type DiskDeps } from './modules/disk/service.js';
 import { DiskUsageService, type DuDeps } from './modules/disk/usage.js';
 import { TailService } from './modules/logs/tail.js';
@@ -51,6 +52,7 @@ export interface BuildOptions {
   processDeps?: ProcessDeps;
   portDeps?: PortDeps;
   diskDeps?: DiskDeps;
+  cleanupDeps?: CleanupDeps;
   duDeps?: DuDeps;
   /** Substitui o pty/kill das execuções (testes). */
   runDeps?: Partial<RunDeps>;
@@ -178,7 +180,7 @@ export async function buildApp(config: Config, token: string, opts: BuildOptions
   systemRoutes(app, { health, system, sampleIntervalMs: config.sampleIntervalMs });
   processRoutes(app, { processes, tails, sampleIntervalMs: config.sampleIntervalMs });
   portRoutes(app, { ports });
-  diskRoutes(app, { disk, usage });
+  diskRoutes(app, { disk, usage, cleanup: new CleanupService(config.dataDir, audit, opts.cleanupDeps) });
   actionRoutes(app, {
     actions,
     runs,

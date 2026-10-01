@@ -6,6 +6,12 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ### Changed
 
+- **Limpeza assistida:** tamanho mínimo de arquivo configurável em MB, aplicado no servidor a caches e Downloads antes de incluir candidatos na prévia. Padrão 0, com suporte a frações; mantém revisão e confirmação.
+
+- **Limpeza assistida:** limite de candidatos configurável de 1 a 20.000 (padrão 10.000), análise de até 2 minutos e prévia paginada em 100 arquivos. Orçamento global de 20.000 candidatos em memória, com snapshots de ancestrais compartilhados.
+
+- **Prévia de limpeza:** itens com altura variável e separadores, evitando sobreposição de caminhos, datas e ações ao abrir motivo/impacto.
+
 - **Interface Contexto:** navegação lateral com nomes sempre visíveis, filtros sob demanda, detalhes ao lado a partir de 1200px e abaixo em telas menores, área de trabalho limitada a 1680px para ultrawide. Processos usa lista essencial com busca no conteúdo e ordenação avançada nos filtros; Portas mantém busca visível. Nova ação fica no cabeçalho; sinais adicionais de processos ficam em Mais sinais. Superfícies mais discretas, texto secundário com mais contraste e terminal com controle rotulado, recolhido por padrão quando não há preferência salva.
 
 - **Criar com IA:** esclarecimentos agora têm um campo por pergunta, etapas com Voltar/Próxima, revisão e edição das respostas antes do envio conjunto. Navegação não chama o provedor; respostas são preservadas em falhas e cancelamento.
@@ -21,6 +27,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
   - exportações `bash-monitor/actions` podem ser importadas; o LaunchAgent `com.bash-monitor.server` é removido ao instalar o novo.
 
 ### Added
+
+- **Limpeza assistida do disco:** análise local de caches reconhecidos e Downloads antigos/grandes, prévia por arquivo sem seleção inicial, filtro, revelação no Finder e confirmação explícita. Envio à Lixeira com revalidação, bloqueio de arquivos em uso, planos de uso único, recuperação sem sobrescrever originais e relatório de enviados/ignorados/falhas. Testes usam arquivos temporários e destinos simulados.
 
 - **Criar ações com IA:** configuração de Gemini/Anthropic e API key em memória ou arquivo 0600; geração com esclarecimentos/refinamento, validação de templates e revisão no editor existente. Criar não executa, automações ficam desligadas e credenciais não vão para o ambiente dos comandos. Inclui limites, cancelamento, auditoria sem conteúdo, testes de segurança/API e E2E com respostas simuladas.
 
