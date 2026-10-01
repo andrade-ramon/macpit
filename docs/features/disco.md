@@ -2,6 +2,28 @@
 
 Status: **implementado**.
 
+## Limpeza assistida
+
+O campo **Tamanho mínimo (MB)** filtra todas as categorias antes de gerar a prévia, inclusive Downloads antigos e caches. Usa MB decimal: 100 equivale a 100.000.000 bytes; tamanho igual ao mínimo também é incluído. Padrão 0 desativa o filtro, aceita frações de MB e máximo 1.000.000 MB. O campo é aplicado na próxima análise; não altera uma prévia já criada. Não é uma autorização para limpar: seleção e confirmação continuam obrigatórias.
+
+Os itens da prévia têm altura variável, separadores e rolagem própria; abrir motivo/impacto expande o item sem sobrepor o próximo arquivo.
+
+A página Disco permite analisar uma pasta dentro do diretório pessoal, revisar cada arquivo e confirmar o envio à Lixeira. A análise é local e não altera arquivos; não usa IA, shell, `sudo` ou ações salvas.
+
+- Caminho absoluto ou `~`, padrão `~/Downloads`, no mesmo volume do diretório pessoal. Projetos são reconhecidos pela presença de um `package.json` regular; são analisados apenas os caches `node_modules/.vite`, `node_modules/.cache` e `.next/cache`. Código-fonte, `dist`, dependências e outros artefatos não são sugeridos automaticamente.
+- Downloads com pelo menos 100 MiB ou modificação há 30 dias aparecem como **revisão manual**. Idade/tamanho não comprovam que o arquivo seja descartável.
+- Não segue symlinks nem entra em outros volumes durante a análise. Ignora hardlinks, arquivos de outro proprietário, pastas protegidas (`Library`, `.git`, credenciais, dados do macpit, backups e pacotes de aplicativos/fotos), arquivos ocultos e nomes/extensões reconhecidos de segredos e bancos. Isso não é um detector universal de dados sensíveis: revise a seleção.
+- A prévia mostra caminho completo, tamanho lógico, última modificação, categoria, motivo e impacto de **cada arquivo**. Nada vem selecionado; filtro não altera a seleção. Mostrar no Finder exige um ID da prévia e revalida o arquivo.
+- Campo **Limite de arquivos** configurável entre 1 e 20.000 candidatos, padrão 10.000. Até `max(60.000, limite × 6)` entradas visitadas, 30 níveis e 120 segundos por análise. Limites/permissões produzem uma prévia parcial com avisos; somente arquivos exibidos podem ser selecionados. Cancelar interrompe a análise quando a desconexão chega ao servidor. A prévia mostra 100 arquivos por página, preservando a seleção ao paginar ou filtrar.
+- Até quatro prévias em memória, com no máximo 20.000 candidatos somados entre elas, validade de 10 minutos; até 500 arquivos por execução. Prévia mais antiga é descartada quando necessário para respeitar o orçamento. Snapshots de ancestrais são compartilhados dentro de cada análise para reduzir memória e I/O. Uma análise/limpeza por vez. A confirmação lista todos os caminhos selecionados, inclusive os ocultos pelo filtro/paginação. Uma prévia utilizada não pode ser repetida.
+- Antes de mover, confere identidade, tamanho, datas, permissões, proprietário, hardlinks e ancestrais; consulta `lsof`. Arquivo alterado/em uso ou conferência inconclusiva é ignorado. Uma área temporária privada ao lado do original permite conferir a identidade novamente antes de chamar o Finder.
+- O Finder recebe um script fixo por `osascript` com o caminho em argv e move o arquivo à Lixeira. O macOS pode pedir permissão de Automação para controlar o Finder. Não há exclusão permanente, esvaziamento da Lixeira ou reinício de aplicativos.
+- Se falhar, tenta devolver o arquivo sem sobrescrever um original novo. Se isso não for possível, preserva o arquivo e `recuperacao.json` na área temporária e informa o caminho. Uma queda abrupta também pode deixar essa área: use o manifesto para recuperar manualmente. A recuperação da Lixeira é manual para o caminho original exibido; “Colocar de Volta” pode apontar para a área temporária.
+- O resultado distingue enviados, ignorados e falhas, e contabiliza apenas bytes dos envios confirmados. Tamanhos lógicos são estimativas: APFS, compressão, clones e snapshots podem mudar o espaço efetivo. Enviar à Lixeira não libera espaço; métricas do volume são consultadas novamente e o cache do explorador é invalidado.
+- Fechar a página depois de confirmar não cancela a limpeza em andamento. Em erro de rede ou timeout do Finder, o resultado pode ser incerto: confira a Lixeira e analise novamente, sem repetição automática. Limite de 120 segundos entre itens; operações individuais têm timeouts próprios.
+
+Testes usam pastas temporárias e Lixeira/Finder injetados; E2E usa respostas sintéticas e verifica prévia, seleção, cancelamento, confirmação, falhas e larguras de celular a ultrawide. Nenhum arquivo pessoal é movido nos testes.
+
 ## Volumes (`apps/server/src/modules/disk/service.ts`)
 
 - A lista vem de `df -kP` com `LC_ALL=C`. O parser aceita espaços no filesystem (`map auto_home`, `//user@host/share`) e no ponto de montagem (`/Volumes/Backup Externo`).

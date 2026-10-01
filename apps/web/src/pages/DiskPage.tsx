@@ -4,6 +4,7 @@ import { useLayout } from '../components/layout/LayoutContext';
 import { Workspace } from '../components/layout/Workspace';
 import { Segmented } from '../components/ui/Switch';
 import { DiskExplorer } from '../features/disk/DiskExplorer';
+import { DiskCleanup } from '../features/disk/DiskCleanup';
 import { DiskHistoryChart, growthPerDay } from '../features/disk/DiskHistoryChart';
 import { usageLevel } from '../features/disk/diskUtils';
 import { useDisk, useDiskHistory, useDiskSettings } from '../features/disk/useDisk';
@@ -251,6 +252,7 @@ export function DiskPage() {
         )}
       </section>
       <DiskExplorer key={explore.n} initialPath={explore.path} />
+      <DiskCleanup />
     </Workspace>
   );
 }

@@ -88,6 +88,17 @@ Outras decisões da fase 6:
 
 ## Arquivos de implementação
 
+### Limpeza assistida
+
+O limite de candidatos é validado como inteiro entre 1 e 20.000 (padrão 10.000); a análise limita entradas visitadas a `max(60.000, limite × 6)` e tempo a 120 segundos. As prévias mantidas somam no máximo 20.000 candidatos, com descarte das mais antigas; metadados de ancestrais são compartilhados por análise. A prévia renderiza apenas 100 arquivos por página.
+
+- Todas as rotas `/api/disk/cleanup/*` exigem sessão/Host/Origin e entradas zod estritas. Executar exige `confirm: true`, ID de uma prévia válida e subconjunto de IDs conhecidos; não recebe caminhos ou comandos livres. A prévia é consumida antes de aguardar I/O; concorrência e replay são bloqueados. Root não pode analisar nem executar limpeza.
+- Varredura restrita ao home e seu volume, sem seguir symlinks ou atravessar volumes; candidatos limitados a caches reconhecidos e downloads sujeitos a revisão manual. Locais protegidos, hardlinks e arquivos de outro proprietário são ignorados. Arquivos e ancestrais dentro do home devem pertencer ao usuário e não ter bits de escrita para grupo/outros; mudanças de proprietário/permissões invalidam o item. Dados não são enviados a provedores de IA.
+- Antes de mover, `lstat` confere identidade/metadados e ancestrais, e `lsof` verifica uso. Falha de consulta ignora o item. Arquivo é renomeado para uma área 0700 no mesmo diretório e revalidado antes do Finder; alterações entre prévia e rename não são enviadas à Lixeira.
+- Finder usa script constante de `osascript`, caminho somente em argv; nenhuma interpolação em shell/AppleScript. Não há `rm -rf`, `sudo`, exclusão permanente ou execução de ações salvas. Restauração usa link exclusivo: um novo original jamais é sobrescrito.
+- Em falhas/queda, arquivos não restaurados ficam preservados com manifesto de recuperação. Timeout/desconexão pode deixar o resultado incerto; a interface pede conferência e nova análise, sem repetir o plano. Consultar `lsof` não impede que outro processo abra/escreva o arquivo depois. As conferências e área privada reduzem corridas, mas não isolam de um processo malicioso com o mesmo UID/root; a seleção continua exigindo revisão humana.
+- Auditoria registra apenas ID/contagens/bytes. Testes de movimentação usam arquivos temporários e dependências falsas; E2E não aciona Finder/Lixeira reais.
+
 - `apps/server/src/lib/security.ts` (hook `onRequest` global) e `lib/auth.ts`. Coberto por `test/security.test.ts` e `test/ws.test.ts`.
 - Clientes sem navegador (curl, scripts) usam `Authorization: Bearer $(cat ~/.macpit/token)`.
 - Headers `nosniff`, `X-Frame-Options: DENY` e `Referrer-Policy: no-referrer` em todas as respostas.

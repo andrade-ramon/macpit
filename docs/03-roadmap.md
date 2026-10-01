@@ -36,6 +36,8 @@ Cada fase é entregável e testável sozinha. Marque `[x]` ao concluir (no mesmo
 
 ## Fase 4 — Disco
 
+- [x] Limpeza assistida: caches reconhecidos e Downloads, prévia por arquivo, seleção manual, confirmação, Lixeira, revalidação e relatório de falhas.
+
 - [x] Parser de `df -kP` (filtrar volumes de sistema irrelevantes, APFS)
 - [x] Amostragem periódica gravada no SQLite (`disk_samples`, retenção 30 dias)
 - [x] Página Disco: barras por volume, gráfico histórico, limite de alerta configurável

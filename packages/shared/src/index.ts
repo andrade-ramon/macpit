@@ -1,6 +1,7 @@
 export * from './schemas/actions.js';
 export * from './schemas/ai.js';
 export * from './schemas/disk.js';
+export * from './schemas/cleanup.js';
 export * from './schemas/health.js';
 export * from './schemas/ports.js';
 export * from './schemas/processes.js';

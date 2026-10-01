@@ -18,7 +18,14 @@ Estado só em memória (perdido ao reiniciar):
 - histórico de métricas do sistema (5 min);
 - tails ativos;
 - cache do explorador de disco (10 min);
+- até quatro prévias de limpeza (10 min), no máximo 20.000 candidatos somados, com IDs aleatórios, arquivos e snapshots de identidade/ancestrais compartilhados por análise; consumidas antes de executar. O limite e tamanho mínimo escolhidos ficam apenas na interface/pedido, sem configuração persistida;
 - buffer de 256 KB das execuções em andamento.
+
+## Limpeza assistida
+
+Sem migration nova. `audit_log.kind = "cleanup"` registra início/fim, ID da prévia, contagens e bytes confirmados; não grava nomes de arquivos, conteúdo ou comandos.
+
+Durante a limpeza, uma pasta `.macpit-cleanup-<aleatório>` (0700) é criada ao lado de cada arquivo. Contém temporariamente o arquivo com seu nome original em `arquivos/` (0700) e `recuperacao.json` (0600) com `{ originalPath }`. A subpasta evita colisões entre o nome do arquivo e o manifesto. Após envio confirmado ou restauração bem-sucedida, apenas o manifesto e as pastas vazias são removidos. Falha de restauração ou queda pode preservar ambos; não há remoção automática desses resíduos. O Finder gerencia o destino na Lixeira. A recuperação é manual, consultando o caminho original na prévia/resultado ou no manifesto.
 
 ## IA
 
