@@ -16,7 +16,7 @@
   "dependencies": {
     "@macpit/shared": "workspace:*",
     "@fastify/cookie": "^11.1.2",
-    "@fastify/static": "^10.1.4",
+    "@fastify/static": "^10.1.5",
     "@fastify/websocket": "^11.3.1",
     "fastify": "^5.12.5",
     "node-pty": "^1.1.0",
